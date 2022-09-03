@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Venchmark - Delete Vendor{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+          <div class="PageHeader"><h1>Delete Vendor</h1></div>
+          <div class="PageSubHeader"><h3>{{ object.name }}  </h3></div>
+          <p>
+
+
+
+            <div class="listing">
+              <!-- bootstrap tables CSS -->
+              <h3>Are you sure?</h3>
+              <p>You're about to delete the vendor {{ object.name }} from the system.
+              <p><b><i>This action cannot be undone.</i></b> Please confirm.</p>
+              <form action="" method="post">
+                  {% csrf_token %}
+                  <button type="button" class="btn btn-default" onclick="window.history.go(-1);">Cancel</button>
+                  <button type="submit" class="submit-btn btn btn-danger">Delete Company</button></a>
+
+              </form>
+
+          </div>  <!-- close listing div -->
+
+      </div> <!-- close card-body div -->
+    </div>
+
+
+
+{% endif %}
+
+{% endblock %}

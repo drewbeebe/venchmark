@@ -1,0 +1,38 @@
+  {% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% block title %}Venchmark - Vendor Questionnaire{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+    <body>
+      
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+
+              <div class="PageHeader"><h1>Assessment Questionnaire</h1>
+              </div>
+              <div class="PageSubHeader">
+                    <span>
+                    Vendors: This questionnaire has been submitted back to the requestor for analysis. If  you feel this has been submitted in error, then please reach out to your Point of Contact and they can resend the questionnaire to you for completion.
+                    </span>
+              </div>
+
+
+
+      </div>
+    </div>
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

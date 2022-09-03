@@ -1,0 +1,25 @@
+<!-- templates/vendor_new.html -->
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+
+<h1>{{ object.name }} Questionnaire</h1>
+<table border="1">
+    <thead>
+      <th>Assesment</th>
+      <th>Control</th>
+      <th>Question</th>
+      <th>Answer</th>
+    <thead>
+    <tbody>
+{% for question in questions %}
+<tr><td>{{ question.assessment }}</td><td>{{ question.control }}</td><td>{{ question.question }}</td><td>{{ question.answer }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}

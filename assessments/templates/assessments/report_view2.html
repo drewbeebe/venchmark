@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Venchmark - Reports{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+
+
+    <body>
+
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+          <div class="PageHeader"><h1>{{ report.name }}</h1></div>
+          <div class="thingamabob">
+            {% if report.assessment.status == "REPORT_GENERATED" %}
+              <a href="/assessment/{{ report.assessment.uuid }}/status-change/"<button class="btn btn-success" id="btnApproveReport">Approve Report</button></a>
+            {% endif %}
+          </div>
+          <p>
+
+            <div class="executive summary">
+              <div class="executive summary heading">
+                <h3>Executive Summary</h3>
+              </div>
+              <div id="ReportForm" class="form-group-lg">
+
+                <table class="table table-bordered table-condensed table-responsive" id="ExecSumTable" style="background-color:white;">
+                  <tr>
+                      <td >
+                                  <div id="repExecSum">
+                                      <p id="ExecSumPara">
+
+                                      </p>
+                                  </div>
+                                  <script>
+                                      $(document).ready(function () {  // open document.read(function () {
+
+
+                                            document.getElementById("ExecSumPara").innerHTML = "{{ report.executive_summary |escapejs }}";
+
+
+                                      });   // close document.read(function () {
+                                  </script>
+
+
+
+
+                            <!-- <p>
+                            <button type="submit" class="btn btn-success" id="{{ report.uuid }}-submit" onClick="submitExecSum();">Save Executive Summary</button>
+                            </p>
+                          </form> -->
+                        </td>
+
+                  </tr>
+                </table>
+            </div>
+
+            <div class="executive findings">
+              <div class="executive findings heading">
+                <h3>Findings</h3>
+              </div>
+                <table class="table table-bordered table-condensed table-responsive" id="ExecFindingsTable" style="background-color:white;">
+                  <tr>
+                      <td >
+                        <div id="repExecFindings">
+                            <p id="ExecFindingsPara">
+
+                            </p>
+                        </div>
+                        <script>
+                            $(document).ready(function () {  // open document.read(function () {
+
+
+                                  document.getElementById("ExecFindingsPara").innerHTML = "{{ report.executive_findings |escapejs }}";
+
+
+                            });   // close document.read(function () {
+                        </script>
+
+                      </td>
+
+                  </tr>
+                </table>
+              </div>
+              <div class="executive compliance summary">
+                <div class="executive compliance heading">
+                  <h3>Security Controls Compliance</h3>
+                </div>
+                  <table class="table table-bordered table-condensed table-responsive" id="ExecComplianceTable" style="background-color:white;">
+                    <tr>
+                        <td >
+                          <div id="repExecComplianceSum">
+                              <p id="ExecComplianceSumPara">
+
+                              </p>
+                          </div>
+                          <script>
+                              $(document).ready(function () {  // open document.read(function () {
+
+
+                                    document.getElementById("ExecComplianceSumPara").innerHTML = "{{ report.executive_compliance_summary |escapejs }}";
+
+
+                              });   // close document.read(function () {
+                          </script>
+
+                          </td>
+
+                    </tr>
+                  </table>
+                </div>
+
+                <div class="compliance graph heading">
+                  <h3>Security Controls Compliance Chart</h3>
+                </div>
+                <div class="vendor security control compliance chart">
+                  <div id="canvas-holder" style="width:50%" align="center" >
+                    <canvas id="assessmentComplianceChart" style="background-color:white;text-align:center;"> <!-- width="800" height="450"></canvas> -->
+                  </div>
+
+                  <script>
+
+
+                  var endpoint='/api/v1/assessment/{{ report.assessment.uuid }}/compliance/'
+
+
+                  var defaultData = [];
+                  var labels = [];
+                  // Create a request variable and assign a new XMLHttpRequest object to it.
+                  //$.ajax({
+                  //var myJSON;
+
+                  $.ajax({
+                    "url" : "/api/v1/assessment/{{ report.assessment.uuid }}/compliance/",
+                    "type" : "GET",
+                    "beforeSend" : function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Token {{ token }}");
+                    },
+                        //"url" : "/api/v1/controls/{{ report.orderID }}/?format=datatables",
+
+                    dataType: 'json',
+                      success: function (data) {
+                            //Do stuff with the JSON data
+                            function setChart(){
+                              var ctx = document.getElementById("assessmentComplianceChart");
+                              var piechart = new Chart(ctx, {
+                                  type: 'doughnut',
+                                  options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Vendor Cyber Security Control Adherence'
+                                    }
+                                  },
+                                  data: {
+                                      labels: ["Compliant Controls", "Non-Compliant Controls" ],
+                                      datasets: [{
+                                          label: 'Vendor Compliance',
+                                          data: [data.compliant_controls, data.non_compliant_controls ],
+                                          backgroundColor: [
+
+                                                  window.chartColors = '#00FF00', //window.chartColors.green,
+                                                  window.chartColors = '#FF0000', //window.chartColors.red,
+
+                                    ],
+
+                                          //data: ['20','15', '10'],
+                                      }]
+                                  }
+                              });
+                            }
+
+                            setChart()
+
+                    }
+                  });
+
+
+                  //$.getJSON(endpoint, function(data){
+
+
+
+
+                //  }
+
+                  //)
+                  </script>
+
+                </div>
+
+                  <div class="executive risk assessment">
+                    <div class="executive risk assessment heading">
+                      <h3>Risk Assessment</h3>
+                    </div>
+                      <table class="table table-bordered table-condensed table-responsive" id="ExecRiskAssessmentTable" style="background-color:white;">
+                        <tr>
+                            <td >
+                              <div id="repExecRiskAssmtSum">
+                                  <p id="ExecCRiskAssmtSumPara">
+
+                                  </p>
+                              </div>
+                              <script>
+                                  $(document).ready(function () {  // open document.read(function () {
+
+
+                                        document.getElementById("ExecCRiskAssmtSumPara").innerHTML = "{{ report.executive_risk_assessment_summary |escapejs }}";
+
+
+                                  });   // close document.read(function () {
+                              </script>
+
+
+                              </td>
+
+                        </tr>
+                      </table>
+                    </div>
+
+                <div class="compliance graph heading">
+                  <h3>Vendor Risk Chart</h3>
+                </div>
+
+                <div class="controls risk table">
+                  <div id="canvas-holder riskChart center" style="width:50%" >
+                    <canvas id="assessmentRiskChart" style="background-color:white;"> <!-- width="800" height="450"></canvas> -->
+                  </div>
+
+                  <script>
+
+
+                  var endpoint='/api/v1/assessment/{{ report.assessment.uuid }}/risk/'
+
+
+                  var defaultData = [];
+                  var labels = [];
+                  // Create a request variable and assign a new XMLHttpRequest object to it.
+                  //$.ajax({
+                  //var myJSON;
+
+                  $.ajax({
+                    "url" : "/api/v1/assessment/{{ report.assessment.uuid }}/risk/",
+                    "type" : "GET",
+                    "beforeSend" : function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Token {{ token }}");
+                    },
+                        //"url" : "/api/v1/controls/{{ report.orderID }}/?format=datatables",
+
+                    dataType: 'json',
+                      success: function (data) {
+                            //Do stuff with the JSON data
+                            function setChart(){
+                              var ctx = document.getElementById("assessmentRiskChart");
+                              var piechart = new Chart(ctx, {
+                                  type: 'doughnut',
+                                  options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Vendor Risk Profile'
+                                    }
+                                  },
+                                  data: {
+                                      labels: ["High Risk Controls", "Moderate Risk Controls", "Low Risk Controls" ],
+                                      datasets: [{
+                                          label: 'Vendor Risk',
+                                          data: [data.high_risk_controls, data.moderate_risk_controls, data.low_risk_controls ],
+                                          backgroundColor: [
+                                            window.chartColors = '#FF0000', //window.chartColors.red,
+                                            window.chartColors = '#FFA500', //window.chartColors.orange,
+                                            window.chartColors = '#00FF00', //window.chartColors.green,
+
+                                    ],
+
+                                          //data: ['20','15', '10'],
+                                      }]
+                                  }
+                              });
+                            }
+
+                            setChart()
+
+                    }
+                  });
+
+
+                  //$.getJSON(endpoint, function(data){
+
+
+
+
+                //  }
+
+                  //)
+                  </script>
+                </div>
+
+                <div class="risk profile chart">
+                </div>
+
+            </div>
+            <div class="controls compliance">
+              <div class="controls compliance heading">
+                <h3>Control Compliance</h3>
+              </div>
+                <p>{{ report.assessment.vendor.name }} Control Compliance
+                  <p>
+                  <p>
+                  {% if questions %}
+                            <div class="table-responsive">
+
+                                  <table class="table table-hover table-light table-bordered venchmark-table results" id="control_compliance_table" style="background-color:white;">
+                                      <thead>
+                                          <tr>
+                                              <th style="display: none;">#</th>
+                                              <th>Control</th>
+                                              <th>Question</th>
+                                              <th>Answer</th>
+                                              <th>Compliance</th>
+                                              <th>Notes</th>
+                                          </tr>
+                                      </thead>
+
+                                      <tbody>
+                                        {% for question in questions %}
+                                          <tr>
+                                              <!-- <th scope="row" style="display: none;">1</th> -->
+                                              <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ question.control.subcategoryID }}
+                                                  </span></td>
+                                              <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ question.question }}
+                                                  </span></td>
+                                              <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.answer }}
+                                                  </span></td>
+                                              <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.compliance }}
+                                                  </span></td>
+                                              <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.notes }}
+                                              </span></td>
+
+                                        </tr>
+                                          {% endfor %}
+                                      </tbody>
+                                  </table>
+
+                              </div>
+                          </div>
+                  {% endif %}
+            </div>
+            <div class="controls risk">
+              <div class="controls RISK heading">
+                <h3>Risk Assignment</h3>
+              </div>
+                <p>{{ report.assessment.vendor.name }} Security Control Risks
+                  <div class="table-responsive">
+
+                        <table class="table table-hover table-light table-bordered venchmark-table results" id="control_risks_table" style="background-color:white;">
+                            <thead>
+                                <tr>
+                                    <th style="display: none;">#</th>
+                                    <th>Control</th>
+                                    <th>Question</th>
+                                    <th>Answer</th>
+                                    <th>Compliance</th>
+                                    <th>Notes</th>
+                                    <th>Likelihood of Exploit</th>
+                                    <th>Impact</th>
+                                    <th>Risk</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                              {% for nc_question in nc_questions %}
+                                <tr>
+                                    <!-- <th scope="row" style="display: none;">1</th> -->
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ nc_question.control.subcategoryID }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ nc_question.question }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.answer }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.compliance }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.notes }}
+                                    <!-- </span><input class="tabledit-input form-control input-med" type="text" name="answer" value="" style="display: none;" disabled=""> -->
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.likelihood }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.impact }}
+                                        </span></td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.risk_rating }}
+                                        </span></td>
+
+                              </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            <!-- </div> -->
+            <!-- <div class="conclusion"> -->
+            <!-- </div> -->
+
+
+
+      </div>
+    </div>
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

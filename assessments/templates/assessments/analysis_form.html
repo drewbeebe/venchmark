@@ -1,0 +1,93 @@
+{% block content %}
+
+
+<form method="post" action="">
+  {% csrf_token %}
+{% load crispy_forms_tags %}
+
+{{ form.errors }}
+{{ form.non_field_errors }}
+
+
+ <div class="modal-header">
+    <h3 class="modal-title">{{ question.control.subcategoryID }}</h3>
+
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group col-md-8 mb-0">
+      <h4>Question:</h4>
+      {{ form.question }}
+
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8 mb-0">
+      <h4>Answer:</h4>
+      {% if form.answer %}
+        {{ form.answer }}
+      {% else %}
+        Unanswered by vendor
+      {% endif %}
+
+      </div>
+
+    </div>
+    <p>
+    <p>
+    <!-- <div class="modal-body"> -->
+      <div class="form-row">
+
+        <div class="form-group col-md-6 mb-0">
+          <h4>Analyst notes</h4>
+        {{ form.notes }}
+        <!-- <input type="hidden" name="next" value="{{ quuid }}"> -->
+
+        </div>
+
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+          <h4>Compliant/Not Compliant:</h4>
+        {{ form.compliance }}
+
+        </div>
+      </div>
+      <p>
+      <p>
+      <div class="form-row">
+        <div class="form-group col-md-4 mb-0">
+          <h5>Likelihood</h5>
+        {{ form.likelihood }}
+
+        </div>
+        <div class="form-group col-md-4 mb-0">
+          <h4>Impact</h4>
+        {{ form.impact }}
+        <!-- <input type="hidden" name="next" value="{{ quuid }}"> -->
+        </div>
+        <div class="form-group col-md-4 mb-0">
+          <h5>Risk Rating</h5>
+        {{ form.risk_rating }}
+        <!-- <input type="hidden" name="next" value="{{ quuid }}"> -->
+        </div>
+        <input type="hidden" name="next" value="{{ quuid }}">
+        <input type="hidden" name="was_analyzed" value="True" />
+
+      </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="submit-btn btn btn-primary">Submit Analysis</button>
+    <!-- <a href='{{ view.success_url }}'><button type="button" class="submit-btn btn btn-primary">Submit Analysis</button></a> -->
+  </div>
+
+</form>
+
+{% endblock content %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Venchmark - Users{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+
+    <body>
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+          <div class="PageHeader"><h1>Users </h1></div>
+          <p>
+          <a href="{% url 'user_new' %}"<button class="create-user btn btn-primary" type="button" name="button">+ User</button></a>
+
+          {% if people_list %}
+          <div class="listing">
+            <!-- bootstrap tables CSS -->
+            <link href="{% static 'bs/css/bootstrap-table.min.css' %}" rel='stylesheet'>
+            <script src="{% static 'bs/js/bootstrap-table.min.js' %}"></script>
+            <div class="form-group pull-right">
+                <input type="text" class="search form-control" placeholder="Search ...">
+            </div>
+            <span class="counter pull-right"></span>
+            <table class="table table-hover table-light table-bordered venchmark-table results" id="controlsTable" >
+
+
+            <thead class="thead-light">
+              <tr>
+
+
+                  <th>Control ID</th>
+                  <th>Control Statement</th>
+                  <th>Control Review Question</th>
+                  <th>References</th>
+                  <!-- <th>Edit</th> -->
+                  <!-- <th data-field="frameworks">Frameworks Used for Assessment</th> -->
+              </tr>
+              {% for control in frameworkcontrols_list %}
+              <tr>
+                <td>{{ control.subcategoryID }}</td>
+                <td>{{ control.control_statement }}</td>
+                <td>{{ control.default_question }}</td>
+                <td>{{ control.refrence }}</td>
+                <!-- <td><a href="/framework/update/{{ framework.uuid }}"<button class="modify-framework-{{ framework.uuid }} btn btn-primary" ><i class="fa fa-pencil"></i></button></a></td> -->
+              </tr>
+              {% endfor %}
+            </thead>
+            </table>
+            <script>
+            $(document).ready(function() {
+                $(".search").keyup(function () {
+                  var searchTerm = $(".search").val();
+                  var listItem = $('.results tbody').children('tr');
+                  var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+
+                $.extend($.expr[':'], {'containsi': function(elem, i, match, array){
+                      return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                  }
+                });
+
+                $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+                  $(this).attr('visible','false');
+                });
+
+                $(".results tbody tr:containsi('" + searchSplit + "')").each(function(e){
+                  $(this).attr('visible','true');
+                });
+
+                var jobCount = $('.results tbody tr[visible="true"]').length;
+                  $('.counter').text(jobCount + ' item');
+
+                if(jobCount == '0') {$('.no-result').show();}
+                  else {$('.no-result').hide();}
+                    });
+              });
+            </script>
+          </div>
+
+        {% else %}
+            <p>No Assessments currently in the application.</p>
+            <p>Would you like to add one now?</p>
+            <form class="form-inline ml-auto">
+              <a href="{% url 'NewAssessment' %}" class="btn btn-success ml-2">Add New Assessment</a>
+              <a href="" class="btn btn-primary ml-2">No</a>
+            </form>
+
+        {% endif %}
+      </div>
+    </div>
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

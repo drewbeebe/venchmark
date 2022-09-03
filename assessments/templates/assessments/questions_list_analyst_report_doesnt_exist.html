@@ -1,0 +1,69 @@
+
+  {% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% block title %}Venchmark - Vendor Questionnaire{% endblock %}
+
+{% debug %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+    <body>
+      <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="questionModal" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Analyze Vendor Response</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+
+              <div class="PageHeader"><h1>Assessment Questionnaire (Analyst - Report Generated - But Not Really)</h1>
+              </div>
+              <div class="PageSubHeader">
+                    <span>
+                    Analysts: The questionnaire and analysis has been finalized but no report appears to have been generated. To generate a report based on the analysis you've previously submitted, plase click the button marked 'Generate Report'
+                    </span>
+              </div>
+
+              <div class="PageSubHeader">
+                  <!-- {% if complete_pct == "100" %}
+                    <button id="submitQuestionnaireButton" class="btn btn-primary">Submit Questionnaire</button>
+                  {% else %}
+
+                    <button id="submitQuestionnaireButton" class="btn btn-secondary">Submit Questionnaire</button>
+                 {% endif %} -->
+
+                 <button id="generateReport" class="btn btn-primary" onClick="window.location.href='/report/generate/{{ uuid }}/';">Generate Report</button>
+              </div>
+
+
+      </div>
+    </div>
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

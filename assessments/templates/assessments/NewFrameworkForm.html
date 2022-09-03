@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Venchmark - New Framework{% endblock %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+{% if user.is_authenticated %}
+
+<body>
+  <div class="card main-body-card rounded mb-0">
+    <div class="card-body">
+      <div class="PageHeader"><h1>New Framework  </h1></div>
+      <p>
+
+          {% crispy form %}
+
+      </div>
+    </div>
+  </div>
+
+
+{% else %}
+
+   <p>You are not logged in</p>
+   <a href="{% url 'login' %}">login</a> |
+   <a href="{% url 'signup' %}">signup</a>
+ {% endif %}
+ </body>
+{% endblock %}

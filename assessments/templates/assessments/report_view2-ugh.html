@@ -1,0 +1,280 @@
+<!-- templates/vendor_new.html -->
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script  src="https://code.jquery.com/jquery-3.4.1.min.js"  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="  crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<!-- <script src='https://www.chartjs.org/dist/2.7.3/Chart.bundle.js'></script> -->
+<script src='https://www.chartjs.org/samples/latest/utils.js'></script>
+
+
+<div class="report header">
+<h1>{{ object.name }}</h1>
+</div>
+<p>
+  <p>
+<div class="executive summary">
+  <div class="executive summary heading">
+    <h3>Executive Summary</h3>
+  </div>
+  <div id="ReportForm" class="form-group-lg">
+
+    <table class="table table-condensed table-responsive" id="ExecSumTable" >
+      <tr>
+          <td >
+              <!-- <form action="/report/{{ object.uuid }}/update/" method="POST" name="formExecSum"> -->
+                       <!-- <textarea id="executive_summary"> -->
+                         {% if object.executive_summary %}
+                            {{ object.executive_summary }}
+                         {% else %}
+                         {{ object.author.company.name }} has performed a review of the business practices and security practices for the vendor, <b>{{ object.assessment.vendor.name }}</b>. The risks associated with {{ object.assessment.vendor.name }}'s business practices and security mechanisms has been determined by the analyst and author of this report.
+                         You will find that the author has documented which of the vendor's business and security practices are in compliance with {{ object.author.company.name }} security controls and which are not in compliance.
+                         <p>Of the controls that the author has determined are not in compliance, a risk assessment has been performed and a risk rating has been assigned to each of those controls found not to be in compliance with company controls.
+                         <p>The vendor, {{ object.assessment.vendor.name }} was provided a questionnaire that was made up of Information Security controls, as documented in the frameworks assigned in this assessment.
+                         <p>This executive summary is the result of reviewing {{ object.assessment.vendor.name }}’s provided answers and documentation and is intended to provide the requestor and {{ object.author.company.name }} IT Leadership a high-level overview of the risks associated with the vendor so that {{ object.author.company.name }} IT Leadership may make an informed decision regarding the purchase of services from the vendor.
+                         {% endif %}
+
+                       <!-- </textarea> -->
+
+                </a>
+                <p>
+
+                </p>
+              <!-- </form> -->
+            </td>
+
+      </tr>
+    </table>
+</div>
+<div class="executive findings">
+  <div class="executive findings heading">
+    <h3>Findings</h3>
+  </div>
+    <table class="table  table-responsive" id="ExecFindingsTable" >
+      <tr>
+          <td >
+              <!-- <form action="/report/{{ object.uuid }}/update/" method="POST" name="formExecSum"> -->
+                       <!-- <textarea id="executive_findings"> -->
+                         {% if object.executive_findings %}
+                            {{ object.executive_findings }}
+                         {% else %}
+                            The table below details the number of gaps found between {{ object.assessment.vendor.name }}’s processes and the Security Controls documented in the {{ object.author.company.name }} Vendor Cybersecurity Compliance Program (based on the documented frameworks).
+                            <p>
+                            <p>
+
+                         {% endif %}
+
+                      <!--  </textarea> -->
+
+                </a>
+                <p>
+
+                </p>
+              <!-- </form> -->
+            </td>
+
+      </tr>
+    </table>
+  </div>
+  <div class="executive compliance summary">
+    <div class="executive compliance heading">
+      <h3>Security Controls Compliance</h3>
+    </div>
+      <table class="table table-responsive" id="ExecComplianceTable" >
+        <tr>
+            <td >
+                <!-- <form action="/report/{{ object.uuid }}/update/" method="POST" name="formExecSum"> -->
+                         <!-- <textarea id="executive_compliance_summary"> -->
+                           {% if object.executive_compliance_summary %}
+                              {{ object.executive_compliance_summary }}
+                           {% else %}
+                           {{ object.assessment.vendor.name }} was compliant with {{ object.c_controls }} of the Security Controls documented in assigned frameworks.
+                           <p><p>{{ object.nc_controls }} security controls were marked "Not Compliant”, and [[NEED TO ADD PARTIALLY COMPLIANT]]. This determination was made because the vendor has either implemented an informal, undocumented process or a partial process but hasn’t provided proof of processes in their respective environments.
+                             [[ NEED TO ADD NOTES FROM AUTHOR FOR REVIEW   ]]
+                           {% endif %}
+
+                        <!--  </textarea> -->
+
+                  </a>
+                  <p>
+
+                  </p>
+                <!-- </form> -->
+              </td>
+
+        </tr>
+      </table>
+    </div>
+
+    <div class="compliance graph heading">
+      <h3>Security Controls Compliance Chart - THIS IS REPORT VIEW 2 AND THERE SHOULD BE A GODDAMNED CHART BELOW</h3>
+    </div>
+    <div class="vendor security control compliance chart">
+      <img src="media/{{ report.executive_compliance_chart }}" />
+
+    </div>
+
+      <div class="executive risk assessment">
+        <div class="executive risk assessment heading">
+          <h3>Risk Assessment</h3>
+        </div>
+          <!-- <table class="table  table-condensed table-responsive" id="ExecRiskAssessmentTable" > -->
+            <!-- <tr> -->
+                <!-- <td > -->
+                    <!-- <form action="/report/{{ object.uuid }}/update/" method="POST" name="formExecSum"> -->
+                            <!-- <textarea id="executive_risk_assessment_summary"> -->
+                               {% if object.executive_risk_assessment_summary %}
+
+                                  <div id="risk_assessment_summary">
+                                      {{ object.executive_risk_assessment_summary }}
+                                  </div>
+                               {% else %}
+                               <div id="risk_assessment_summary">
+                                   <p>While {{ object.assessment.vendor.name }} was able to provide documentation that outlined some robust processes, there were some processes that could be improved.
+                                   <p>
+                                   <p>It is {{ object.author.company.name }}'s opinion that the risk associated with doing business with {{ object.assessment.vendor.name }} is <b>{{ object.assessment.vendor.risk_rating }}</b>.
+                                   <p>
+                                   <p>The table below details the number of controls determined to be of High, Moderate and Low Risk.
+                                  <p>
+                                  <p>The chart below provides an overview of the {{ object.assessment.vendor.name }} Vendor Risk Profile.
+                                </div>
+                               {% endif %}
+
+                      <!--       </textarea> -->
+
+                      </a>
+                      <p>
+
+                      </p>
+                    <!-- </form> -->
+              <!--  </td> -->
+
+          <!--  </tr> -->
+          <!-- </table> -->
+        </div>
+
+        <div class="risk graph heading">
+          <h3>Security Controls Risk Chart</h3>
+        </div>
+        <div class="vendor security control risk chart">
+          <img src="media/{{ report.executive_risk_chart }}" />
+
+
+        </div>
+
+
+</div>
+<div class="controls compliance center">
+  <div class="controls compliance heading">
+    <h3>Control Compliance</h3>
+  </div>
+    <p>{{ object.assessment.vendor.name }} Control Compliance
+      <p>
+      <p>
+      {% if questions %}
+                <div class="table-responsive">
+
+                      <table class="table table-bordered" id="control_compliance_table">
+                          <thead>
+                              <tr>
+                                  <th style="display: none;">#</th>
+                                  <th>Control</th>
+                                  <th>Question</th>
+                                  <th>Answer</th>
+                                  <th>Compliance</th>
+                                  <th>Notes</th>
+                              </tr>
+                          </thead>
+
+                          <tbody>
+                            {% for question in questions %}
+                              <tr>
+                                  <!-- <th scope="row" style="display: none;">1</th> -->
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ question.control.subcategoryID }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ question.question }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.answer }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.compliance }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.notes }}
+                                  </span></td>
+
+                                </td>
+                            </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+
+                  </div>
+              </div>
+      {% endif %}
+</div>
+<div class="controls risk">
+  <div class="controls RISK heading">
+    <h3>Risk Assignment</h3>
+  </div>
+    <p>{{ object.assessment.vendor.name }} Security Control Risks
+      <div class="table-responsive">
+
+            <table class="table table-bordered" id="control_risks_table">
+                <thead>
+                    <tr>
+                        <th style="display: none;">#</th>
+                        <th>Control</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Compliance</th>
+                        <th>Notes</th>
+                        <th>Risk</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                  {% for question in questions %}
+                    <tr>
+                        <!-- <th scope="row" style="display: none;">1</th> -->
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ question.control.subcategoryID }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ question.question }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.answer }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ form.compliance }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.notes }}
+                        </span><input class="tabledit-input form-control input-med" type="text" name="answer" value="" style="display: none;" disabled=""></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.risk_rating }}
+                            </span></td>
+
+                      </td>
+                  </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<div class="conclusion">
+</div>
+
+
+{% endblock %}

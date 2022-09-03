@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}VenSec - Assessments{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+    <body>
+        <!-- List of uploaded documents -->
+        <!-- You currently have XX vendors in the system -->
+        <table border="0">
+          <tr><td>
+        <h3>You have {{ assessment_list|length }}
+
+          {% with amtcount=assessment_list|length %}
+            {% if amtcount == 1 %}
+            assessment
+            {% else %}
+            assessments
+            {% endif %}
+             stored in the system.</h3>
+
+          {% endwith %}
+         </td>
+         <td>
+
+           <!-- Button trigger modal -->
+           <!--<button type="button" name="openBtn" class="btn btn-success openBtn" data-toggle="modal" data-target="#exampleModal" onclick="load_framework_modal()"> -->
+           <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Create book button -->
+          <button class="create-assessment btn btn-primary" type="button" name="button">Add an Assessment</button>
+          <script type="text/javascript">
+          $(document).ready(function() {
+
+              $(".create-assessment").modalForm({
+                  formURL: "{% url 'NewAssessment' %}"
+              });
+
+          });
+          </script>
+<!--
+           <div class="container">
+             <a class="btn btn-secondary" data-toggle="modal" href="#exampleModal" id="openBtn">
+             Add a New Framework</a>
+             <div class="modal-container"></div>
+           </div>
+
+
+         <script type="text/javascript">
+          $(document).ready(function(){
+            var url = "/frameworks/new/"
+            jQuery('#openBtn').click(function(e) {
+              $('.modal-container').load(url,function(result){
+                $('#exampleModal').modal({show:true});
+              });
+            });
+          });
+         </script>
+-->
+        <!--<script type="text/javascript">
+         $(document).ready(function(){
+           //var url = "/frameworks/new/"
+           var url = "{% url 'NewFramework' %}"
+           jQuery('#openBtn').click(function(e) {
+             $('.modal-body').load(url,function(result){
+               $('#form-modal').modal({show:true});
+             });
+           });
+         });
+       </script> -->
+       <script>
+           var formAjaxSubmit = function(form, modal) {
+             $(form).submit(function (e) {
+             e.preventDefault();
+             $.ajax({
+                 type: $(this).attr('method'),
+                 url: $(this).attr('action'),
+                 data: $(this).serialize(),
+                 success: function (xhr, ajaxOptions, thrownError) {
+                     if ( $(xhr).find('.has-error').length > 0 ) {
+                         $(modal).find('.modal-body').html(xhr);
+                         formAjaxSubmit(form, modal);
+                     } else {
+                         $(modal).modal('toggle');
+                     }
+                 },
+                 error: function (xhr, ajaxOptions, thrownError) {
+                     // handle response errors here
+                 }
+             });
+        });
+     }
+     $(document).ready(function(){
+       //var url = "/frameworks/new/"
+       var url = "{% url 'NewAssessment' %}"
+       jQuery('#openBtn').click(function(e) {
+         $('.modal-body').load(url,function(result){
+           $('#form-modal').modal({show:true});
+           formAjaxSubmit('#form-modal-body form', '#form-modal');
+         });
+       });
+     });
+
+       </script>
+
+        </td>
+      </tr>
+    </table>
+    <p>
+
+        {% if assessment_list %}
+              <table class="table table-bordered">
+            <tr>
+              <!-- <td>VendorID</td> -->
+              <td>Assessment Name</td>
+              <td>Vendor</td>
+              <td>Vendor Contact</td>
+              <td>Owner</td>
+              <td>Assessment Start Date</td>
+              <td>Assessment Completed Date</td>
+              <td>Assessment Status</td>
+              <td>Frameworks Used</td>
+
+            </tr>
+                {% for assessment in assessment_list %}
+                    <tr>
+                      <!-- <td>{{ vendor.id }}</td> -->
+                      <td><a href="/assessment/{{ assessment.id }}/">{{ assessment.Name }}</a></td>
+                      <td>{{ assessment.Vendor }}</td>
+                      <td>{{ assessment.VendorContact }}</td>
+                      <td>{{ assessment.Owner }}</td>
+                      <td>{{ assessment.StartDate }}</td>
+                      <td>{{ assessment.CompleteDate }}</td>
+                      <td>{{ assessment.Status }}</td>
+                      <td><ul>{% for framework in assessment.Frameworks.all %}
+                      <li>{{ framework }}
+                      {% endfor %}</ul></td>
+                      <td><a href="/assessment/{{ assessment.id }}/delete"><button type="button" class="btn btn-secondary">Delete</button></a>  <a href="/assessment/update/{{ assessment.id }}"><button type="button" class="btn btn-secondary">Modify</button></a></td>
+                    </tr>
+                {% endfor %}
+
+          </table>
+        {% else %}
+            <p>No Assessments currently in the application.</p>
+            <p>Would you like to add one now?</p>
+            <form class="form-inline ml-auto">
+              <a href="{% url 'NewAssessment' %}" class="btn btn-success ml-2">Add New Assessment</a>
+              <a href="" class="btn btn-primary ml-2">No</a>
+            </form>
+
+        {% endif %}
+
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

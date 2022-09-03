@@ -1,0 +1,17 @@
+{% load assessment_extras %}
+
+{% if request.user|has_group:"owner" %}
+  {% include "assessments/questionnaire_review_owner.html" %}
+{% endif %}
+
+{% if request.user|has_group:"vendor" %}
+  {% include "assessments/questionnaire_review_analyst.html" %}
+{% endif %}
+
+{% if request.user|has_group:"analyst" %}
+  {% include "assessments/questionnaire_review_analyst.html" %}
+{% endif %}
+
+{% if request.user|has_group:"auditor" %}
+  {% include "assessments/questionnaire_review_analyst.html" %}
+{% endif %}

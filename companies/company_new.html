@@ -1,0 +1,23 @@
+{% block content %}
+
+<form method="post" action="">
+  {% csrf_token %}
+{% load crispy_forms_tags %}
+ <div class="modal-header">
+    <h5 class="modal-title">Add New Vendor</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {{ form|crispy }}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="submit-btn btn btn-primary">Create</button>
+  </div>
+
+</form>
+{% endblock content %}

@@ -1,0 +1,33 @@
+
+{% load static %}
+{% load bootstrap_pagination %}
+
+
+    <body>
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+
+              <div class="PageHeader"><h1>{{ assessment.name }} Questionnaire</h1>
+              </div>
+              <div class="PageSubHeader">
+                    <span>
+                    </span>
+              </div>
+
+              <div class="PageSubHeader" style="padding: 25px;">
+                    <span>
+
+                                <div class="alert alert-primary" role="alert">
+                                  This assessment is currently being analyzed.
+                                  <p><p>
+                                </div>
+                    </span>
+              </div>
+
+
+      </div>
+    </div>
+
+    </body>

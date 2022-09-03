@@ -1,0 +1,74 @@
+<!-- message box on the status of the assessment -->
+
+{% load assessment_extras %}
+
+{% load crispy_forms_tags %}
+
+<div class="alert alert-primary" role="alert">
+  This assessment has been submitted to the vendor, {{ assessment.vendor.name }}. They are currently answering the questions contained on the questionnaire.
+  <p><p><a href="/questionnaire/{{ assessment.uuid }}/">The questionnaire for this assessment</a> can be viewed here.
+  <p>Based on how many questions have been answered currently, {{ assessment.vendor.name }} is <b>{{ assessment.uuid|pct_complete }}%</b> done completing the Questionnaire.
+  <p><div id="div_id_vendor" class="form-group"> <label for="id_vendor" class=" requiredField">
+             {{ assessment.vendor.name }} Questionnaire Progress:</label></div>
+             <div class="questionnaire-progress" id="progress">
+    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ assessment.uuid|pct_complete }}%;" aria-valuenow="{{ assessment.uuid|pct_complete }}" aria-valuemin="0" aria-valuemax="100">{{ assessment.uuid|pct_complete }}%</div>
+  </div>
+</div>
+
+
+
+<div  class="form-row " >
+  <div  class="col form-group col-md-8 mb-0" >
+    <div id="div_id_vendor" class="form-group"> <label for="id_vendor" class=" requiredField">
+               Vendor:<span class="asteriskField">*</span> </label>
+      <input type="text" name="vendor" size="75" placeholder="{{ assessment.vendor.name }}" class="textinput textInput form-control" required id="id_vendor" disabled=True></input>
+  </div>
+
+  {% if assessment.vendor_contact %}
+  <div  class="form-row " >
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_vendor_contact" class="form-group"> <label for="id_vendor_contact" class=" requiredField">
+               Vendor POC:<span class="asteriskField">*</span> </label>
+         <input type="text" name="vendor_contact" size="75" placeholder="{{ assessment.vendor_contact.email }}" class="textinput textInput form-control" required id="id_vendor_contact" disabled=True></input>
+       </div> <!-- close div_id_vendor_contact -->
+    </div>  <!-- close col -->
+  {% else %}
+  <div  class="form-row " >
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_vendor_contact" class="form-group"> <label for="id_vendor_contact" class=" requiredField">
+               Vendor POC:<span class="asteriskField">*</span> </label>
+               <input type="text" name="vendor_contact" size="75" placeholder="No Vendor Contact Entered ..." class="textinput textInput form-control" required id="id_vendor_contact" disabled=True></input>
+      </div> <!-- close div_id_vendor_contact -->
+  </div> <!-- close col -->
+  {% endif %}
+
+  <!-- check if analyst exists -->
+  {% if assessment.analyst %}
+
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_analyst" class="form-group">
+        <label for="id_analyst" class=" requiredField">
+               Analyst:<span class="asteriskField">*</span>
+        </label>
+        <input type="text" name="analyst" size="75" placeholder="{{ assessment.analyst.email }}" class="textinput textInput form-control" required id="id_analyst" disabled=True></input>
+      </div>
+    </div> <!-- close col -->
+  </div> <!-- close row -->
+  {% else %}
+
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_analyst" class="form-group">
+        <label for="id_analyst" class=" requiredField">
+               Analyst:<span class="asteriskField">*</span>
+        </label>
+        <input type="text" name="analyst" size="75" placeholder="No Analyst Entered ..." class="textinput textInput form-control" required id="id_analyst" disabled=True></input>
+      </div>
+    </div>  <!--close col-->
+  </div><!-- close row -->
+  {% endif %}
+
+
+  <a href="/assessment/update/{{ assessment.uuid }}/"><button type="button" class="btn btn-success">Edit Assessment</button></a>
+  <a href="/assessments/"><button type="button" class="btn btn-danger">Cancel</button></a>
+
+</div>

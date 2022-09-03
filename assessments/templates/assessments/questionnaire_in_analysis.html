@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Venchmark - Vendor Questionnaire{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+    {% if user.is_superuser %}
+      {% include "assessments/questionnaire_in_analysis_superuser.html" %}
+    {% else %}
+      {% include "assessments/questionnaire_in_analysis_user.html" %}
+    {% endif %}
+
+{% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+{% endif %}
+{% endblock %}

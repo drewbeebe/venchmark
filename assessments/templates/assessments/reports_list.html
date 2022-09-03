@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Venchmark - Reports{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+
+    <body>
+
+
+      <div class="card main-body-card rounded mb-0">
+        <div class="card-body">
+          <div class="PageHeader"><h1>Reports</h1></div>
+          <p>
+
+
+
+          {% if report_list %}
+            <div class="listing">
+              <!-- bootstrap tables CSS -->
+              <link href="{% static 'bs/css/bootstrap-table.min.css' %}" rel='stylesheet'>
+              <script src="{% static 'bs/js/bootstrap-table.min.js' %}"></script>
+              <div class="form-group pull-right">
+                  <input type="text" class="search form-control" placeholder="Search ...">
+              </div>
+              <span class="counter pull-right"></span>
+              <table class="table table-hover table-light table-bordered venchmark-table results" id="reportsTable">
+
+
+                <thead>
+                 <tr>
+                   <!-- <th>order_id</th> --> <!-- 0 -->
+                   <!-- <th>Report ID</th> --> <!-- 1 -->
+                   <th>Report Name</th> <!-- 2 -->
+                   <th>Vendor</th> <!-- 3 -->
+                   <!-- <th>Report Assessment</th> -->
+                   <th>Status</th> <!-- 5 -->
+                   <th>Assessment Completion Status</th> <!-- 6 -->
+                   <th>
+                     Edit
+                   </th>
+                   <th>
+                     Delete
+                   </th>
+                   <th>
+                     PDF
+                   </th>
+                   <th>
+                     DOCX
+                   </th>
+
+                 </tr>
+               </thead>
+              <tbody>
+                {% for report in report_list %}
+                <tr class="table-row" data-href="/report/{{ report.uuid }}/">
+                  <td><div class="tbl-assessment-name">{{ report.name }}</div><br>({{ report.assessment.owner.first_name }} {{ report.assessment.owner.last_name }})</td>
+                  <!-- <td><div class="tbl-assessment-name">{{ assessment.name }}</div><br><div class="tbl-assessment-owner">({{ assessment.owner.first_name }} {{ assessment.owner.last_name }})</div></td> -->
+                  <!-- <td><div class="tbl-assessment-name">{{ assessment.name }}</div><br>({{ assessment.owner.first_name }} {{ assessment.owner.last_name }})</td> -->
+                  <td><div class="tbl-assessment-vendor">{{ report.assessment.vendor.name }}</div></td>
+                  <!-- <td>{{ assessment.start_date }}</td> -->
+                  <td>{% if report.assessment.status == "CREATED" %}
+                      Created
+                  {% elif report.assessment.status == "QUESTIONNAIRE_REVIEW" %}
+                      Questionnaire in Review
+                  {% elif report.assessment.status == "VENDOR_SUBMIT" %}
+                      Submitted to Vendor
+                  {% elif report.assessment.status == "IN_ANALYSIS" %}
+                      In Analysis
+                  {% elif report.assessment.status == "REPORT_GENERATED" %}
+                          Report Generated
+                  {% elif report.assessment.status == "ASSESSMENT_REVIEW" %}
+                      Assessment Under Review
+                  {% elif report.assessment.status == "ASSESSMENT_COMPLETE" %}
+                          Assessment Complete
+                  {% endif %}</td>
+                  <td>
+                    {% if report.assessment.status == "CREATED" %}
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 5%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">10%</div>
+                        </div>
+                    {% elif report.assessment.status == "QUESTIONNAIRE_REVIEW" %}
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 15%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            </div>
+                    {% elif report.assessment.status == "VENDOR_SUBMIT" %}
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                        </div>
+                    {% elif report.assessment.status == "IN_ANALYSIS" %}
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                        </div>
+                    {% elif report.assessment.status == "REPORT_GENERATED" %}
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                            </div>
+                    {% elif report.assessment.status == "ASSESSMENT_REVIEW" %}
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                        </div>
+                    {% elif report.assessment.status == "ASSESSMENT_COMPLETE" %}
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                        </div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a href="/report/{{ report.uuid }}/edit/"><button class="modify-report-{{ report.uuid }} btn btn-primary"><i class="fa fa-pencil"></i></button></a>
+                  </td>
+                  <td>
+                    <button class="delete-report-{{ report.uuid }} btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                  </td>
+                  <td>
+                    <a href="/report/{{ report.uuid }}/pdf/"><button class="pdf-report-{{ report.uuid }} btn btn-primary"><i class="fas fa-file-pdf"></i></button></a>
+                  </td>
+                  <td>
+                    <a href="/report/{{ report.uuid }}/docx/"><button class="docx-report-{{ report.uuid }} btn btn-primary"><i class="fas fa-file-word"></i></button></a>
+                  </td>
+                  <!--
+                  <td><a href="/assessment/update/{{assessment.uuid }}"><button class="modify-assessment-{{ assessment.uuid }} btn btn-primary" ><i class="fa fa-pencil"></i></button></a></td>
+
+                  <td align="center"><a href="/assessment/{{ assessment.uuid }}/delete/"><button class="delete-assessment-{{ assessment.uuid }} btn btn-danger" ><i class="fas fa-trash-alt"></i></button>
+                  -->
+
+                </tr>
+                {% endfor %}
+              </tbody>
+              </table>
+              <script>
+              $(document).ready(function() {
+                  $(".table-row").click(function() {
+                      window.document.location = $(this).data("href");
+                  });
+                  $(".search").keyup(function () {
+                    var searchTerm = $(".search").val();
+                    var listItem = $('.results tbody').children('tr');
+                    var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+
+                  $.extend($.expr[':'], {'containsi': function(elem, i, match, array){
+                        return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                    }
+                  });
+
+                  $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+                    $(this).attr('visible','false');
+                  });
+
+                  $(".results tbody tr:containsi('" + searchSplit + "')").each(function(e){
+                    $(this).attr('visible','true');
+                  });
+
+                  var jobCount = $('.results tbody tr[visible="true"]').length;
+                    $('.counter').text(jobCount + ' item');
+
+                  if(jobCount == '0') {$('.no-result').show();}
+                    else {$('.no-result').hide();}
+                      });
+                });
+              </script>
+            </div>
+
+        {% else %}
+            <p>Currently, there are no Reports stored for you in Venchmark.</p>
+
+
+
+        {% endif %}
+      </div>
+    </div>
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,2 @@
+function,functionID,category,categoryID,category_statement,subcategory,control_statement,default_question,reference,subcategoryID
+ID,,Finance,FN.01,"The data, personnel, devices, systems, and facilities that enable the organization to achieve business purposes are identified and managed consistent with their relative importance to organizational objectives and the organization’s risk strategy.",,Vendor companies will disclose how many years they’ve been in business.,How long have you been in business?,,FN.01-1

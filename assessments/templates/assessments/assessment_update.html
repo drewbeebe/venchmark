@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Venchmark - Assessment{% endblock %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ field.name }}: {{  error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if user.is_authenticated %}
+
+<body>
+  <div class="card main-body-card rounded mb-0">
+    <div class="card-body">
+      <div class="PageHeader"><h2>{{ assessment.name }}
+         {% if assessment.status == "CREATED" %}
+         (Created)
+         {% elif assessment.status == "SUBMITTED_TO_VENDOR" %}
+         (Submitted to Vendor)
+         {% elif assessment.status == "SUBMITTED_FOR_ANALYSIS" %}
+         (Submitted for Analysis)
+         {% elif assessment.status == "ANALYSIS_COMPLETE" %}
+         (Analysis Complete)
+         {% elif assessment.status == "REPORT_GENERATED" %}
+         (Report Generated)
+         {% endif %}
+      </h2></div>
+      <p>
+
+
+          {% crispy form %}
+
+      </div>
+    </div>
+  </div>
+
+
+{% else %}
+
+   <p>You are not logged in</p>
+   <a href="{% url 'login' %}">login</a> |
+   <a href="{% url 'signup' %}">signup</a>
+ {% endif %}
+ </body>
+{% endblock %}

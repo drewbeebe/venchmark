@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
+
+
+{% block content %}
+<div class="card main-body-card">
+
+  <div class="container">
+    <div class="PageHeader"><h1>New Assessment</h1></div>
+      <form method="post" action="">
+        {% csrf_token %}
+      {% load crispy_forms_tags %}
+
+           <div class="row">
+            <div class="col-8">
+              {{ form.name|as_crispy_field }}
+            </div>
+            <div class="col=4">
+              <div class="form-label">Vendor<br></div>
+              <select class="selectpicker" data-show-subtext="true" data-live-search="true"  data-width="fit">
+                {% for vendor in vendors %}
+                  <option value="{{ vendor.uuid }}">{{ vendor.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-4">
+              {{ form.status|as_crispy_field }}
+              <div class="form-label">Vendor<br></div>
+              <select class="selectpicker" data-show-subtext="true" data-live-search="true"  data-width="fit">
+                {% for status in form.status %}
+                  <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-4">
+              {{ form.vendor_contact|as_crispy_field }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              {{ form.vendor|as_crispy_field }}
+              <p>
+                <div class="row-fluid">
+
+
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              {{ form.owner|as_crispy_field }}
+              {{ form.auditor|as_crispy_field }}
+              {{ form.analyst|as_crispy_field }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              {{ form.frameworks|as_crispy_field }}
+            </div>
+          </div>
+
+
+      </form>
+  </div>
+
+
+</div>
+{% endblock content %}

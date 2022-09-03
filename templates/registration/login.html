@@ -1,0 +1,53 @@
+<!-- templates/login.html -->
+{% load static %}
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/bs/css/login_page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+</head>
+  <body>
+  <p>
+  <p>
+    <p>
+    <p>
+
+  <div class="card login_card center_card w-25 text-white bg-secondary mb-3" >
+        <div class="card-header"><div class="title">Venchmark</div></div>
+        <div class="card-body">
+          <h5 class="card-title">Vendor Security Benchmark Auditor</h5>
+          <form method="post" id="form_login">
+            {% csrf_token %}
+
+            <br>
+            {% for field in form %}
+                <div class="row">
+                   <div class="col-md-2">
+                    {{ field.label_tag }}
+                    {% if field.help_text %}
+                      <sup>{{ field.help_text }}</sup>
+                    {% endif %}
+                    {{ field.errors }}
+                   </div><div class="col-md-10 pull-left">
+                     {{ field }}
+                   </div>
+                </div>
+             {% endfor %}
+             <p><p>
+
+             </p>
+            <br><button class="btn btn-success ml-2" type="submit">Login</button>
+          </form>
+          <a href="/password-reset/"><button class="btn btn-primary ml-2">Forgot Password</button></a>
+        </div>
+  </div>
+  </div>
+  </body>
+</html>

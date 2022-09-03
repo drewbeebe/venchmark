@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Venchmark - Companies{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+        <!-- List of uploaded documents -->
+        <!-- You currently have XX vendors in the system -->
+
+        <table class="table table-bordered">
+        <tr><td>
+          <h3>You have {{ company_list|length }}
+            {% with companycount=company_list|length %}
+            {% if companycount == 1 %}
+            Vendor Company
+            {% else %}
+            Vendor Companies
+            {% endif %}
+             stored in the system.</h3>
+
+          {% endwith %}
+
+
+         </td>
+        <td>
+        <td>
+
+            <!-- Button trigger modal -->
+            <!--<button type="button" name="openBtn" class="btn btn-success openBtn" data-toggle="modal" data-target="#exampleModal" onclick="load_framework_modal()"> -->
+            <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" id="modal">
+             <div class="modal-dialog modal-xl" role="document">
+               <div class="modal-content">
+
+               </div>
+             </div>
+           </div>
+
+           <!-- Create book button -->
+           <button class="create-company btn btn-primary" type="button" name="button">Add a Vendor</button>
+           <script type="text/javascript">
+           $(document).ready(function() {
+
+               $(".create-company").modalForm({
+                   formURL: "{% url 'company_new' %}"
+               });
+
+           });
+         </script>
+        <script>
+            var formAjaxSubmit = function(form, modal) {
+              $(form).submit(function (e) {
+              e.preventDefault();
+              $.ajax({
+                  type: $(this).attr('method'),
+                  url: $(this).attr('action'),
+                  data: $(this).serialize(),
+                  success: function (xhr, ajaxOptions, thrownError) {
+                      if ( $(xhr).find('.has-error').length > 0 ) {
+                          $(modal).find('.modal-body').html(xhr);
+                          formAjaxSubmit(form, modal);
+                      } else {
+                          $(modal).modal('toggle');
+                      }
+                  },
+                  error: function (xhr, ajaxOptions, thrownError) {
+                      // handle response errors here
+                  }
+              });
+         });
+      }
+      //$(document).ready(function(){
+        //var url = "/frameworks/new/"
+      //  var url = "{% url 'company_new' %}"
+      //  jQuery('#openBtn').click(function(e) {
+      //    $('.modal-body').load(url,function(result){
+      //      $('#form-modal').modal({show:true});
+      //      formAjaxSubmit('#form-modal-body form', '#form-modal');
+      //    });
+      //  });
+      //});
+
+        </script>
+        </td>
+
+      </tr>
+    </table>
+    <p>
+
+        {% if company_list %}
+        <div class="listing">
+          <!--<script src="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"></script> -->
+          <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+          <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+          <p>
+          <p>
+          <h1>Vendor Companies</h1>
+          <div class="container">
+              <table id="companies-table" class="table table-striped table-bordered">
+                     <thead>
+                      <tr>
+                        <th>order_id</th>
+                        <th>uuid</th>
+                        <th>Name</th>
+                        <th>address1</th>
+                        <th>address2</th>
+                        <th>city</th>
+                        <th>state</th>
+                        <th>zip</th>
+                        <th>country</th>
+                        <th>url</th>
+                        <th>Relationship Owner</th>
+                        <th>Data Sensitivity</th>
+                        <th>Risk Rating</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+              </table>
+          </div>
+
+          <script>
+
+          $(document).ready(function() {
+              var table = $('#companies-table').DataTable({
+
+                  "serverSide": true,
+                  "ajax": {
+                      "beforeSend" : function (xhr) {
+                          xhr.setRequestHeader("Authorization", "Token {{ token }}");
+                      },
+                      //"url" : "/api/v1/controls/{{ object.orderID }}/?format=datatables",
+                      "url" : "/api/v1/companies/?format=datatables",
+                      "type" : "GET",
+                    },
+                    columnDefs: [
+                        { targets: [2, 10, 11, 12, 13], visible: true},
+                        { targets: '_all', visible: false }
+                    ],
+                  "columns": [
+                      //{"data": "FrameworkID", "searchable": false},
+                      // Use dot notation to reference nested serializers.
+                      // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
+                      //{"data": "Function", "name": "Function"},
+                      //{"data": "FunctionID", "name": "FunctionID"},
+                      {"data": "order_id", "name": "order_id"},
+                      {"data": "uuid", "name": "uuid"},
+                      {"data": "name", "name": "name",
+                        fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html('<a href="/company/'+oData.uuid+'/">'+oData.name+'</a>');
+                      //      $(nTd).html(<a href='/framework/update/');
+                            }
+                      },
+                      {"data": "address1", "name": "address1"},
+                      {"data": "address2", "name": "address2"},
+                      {"data": "city", "name": "city"},
+                      {"data": "state", "name": "state"},
+                      {"data": "zip", "name": "zip"},
+                      {"data": "country", "name": "country"},
+                      {"data": "url", "name": "url"},
+                      {"data": "relationship_owner.email", "name": "relationship_owner_email",
+                        fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                          $(nTd).html('<a href="/people/'+oData.relationship_owner.uuid+'/">'+oData.relationship_owner.first_name+' '+oData.relationship_owner.last_name+'</a>');
+                          //$(nTd).html('<a href="/people/'+oData.uuid+'/">'+oData.relationship_owner.first_name+'</a>');
+                          //      $(nTd).html(<a href='/framework/update/');
+                          }
+                        },
+                      {"data": "data_sensitivity_rating", "name": "data_sensitivity_rating"},
+                      {"data": "risk_rating", "name": "risk_rating"},
+                      {"data": "uuid", "name": "uuid",
+                        fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html('<a href="/company/update/'+oData.uuid+'"><button class="btn btn-primary" data-title="Edit"><i class="fa fa-pencil"></i></button></a>');
+                      //      $(nTd).html(<a href='/framework/update/');
+                            }
+                      },
+                      {"data": "uuid", "name": "uuid",
+                        fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html('<a href="/company/'+oData.uuid+'/delete"><button class="btn btn-danger" data-title="Delete"><i class="fas fa-trash-alt"></i></button></a>');
+                      //      $(nTd).html(<a href='/framework/update/');
+                            }
+                      },
+                  ]
+
+              });
+
+          });
+          </script>
+        </div>
+        {% else %}
+            <p>No Vendor Companies currently entered into the application.</p>
+            <p>Would you like to add one now?</p>
+            <form class="form-inline ml-auto">
+              <a href="{% url 'company_new' %}" class="btn btn-success ml-2">Add New Vendor</a>
+              <a href="" class="btn btn-primary ml-2">No</a>
+            </form>
+
+        {% endif %}
+
+
+    </body>
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

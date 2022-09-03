@@ -1,0 +1,352 @@
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  padding-bottom: 20px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px; /* Vertically center the text there */
+  /* background-color: #0e2c4a; */
+  background-color:  #595858;
+  color: #fff;
+  text-align: center
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 20px 15px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+
+th, td {
+  padding: 15px;
+}
+
+.navbar-dark {
+  background-color: #595858;
+}
+
+.navbar-brand {
+  font-family: 'Manjari', serif;
+  font-size: 48px;
+  color: '#7575a3';
+  background-color: #595858;
+
+}
+
+/* change the background color */
+.navbar-custom {
+    color: #ffffff;
+    font-family: 'Manjari', serif;
+
+}
+
+/* change the brand and text color */
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+
+    background-color: #595858;
+    font-family: 'Manjari', serif;
+}
+/* change the link color */
+.navbar-custom .navbar-nav .nav-link {
+    color: #ffffff;
+    background-color: #595858;
+    font-family: 'Manjari', serif;
+}
+/* change the color of active or hovered links */
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:focus .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+    font-family: 'Manjari', serif;
+    color: #ffffff;
+    background-color: #595858;
+}
+
+
+.nav-link {
+  color: #ffffff;
+   font-weight: bold;
+   font-size: 18px;
+   font-family: 'Manjari', serif;
+}
+
+.nav-item {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: 'Manjari', serif;
+}
+
+
+
+.PageHeader {
+  font-family: 'Manjari', serif;
+}
+
+.PageSubHeader {
+  font-family: 'Manjari', serif;
+  font-size: 22px;
+  font-style: italic;
+  font-weight: bold;
+
+}
+
+.venchmark-table {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+  font-size: 13px;
+
+}
+
+.header-table {
+  padding: 10px;
+}
+
+
+.vendor-question-table {
+  table-layout:fixed;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.btn {
+  font-family: Liberation Sans;
+}
+
+.tbl-assessment-name {
+  font-size: 20px;
+}
+
+
+.tbl-assessment-owner {
+  font-size: 13px;
+  font-style: italic;
+}
+
+.tbl-company-name {
+  font-size: 20px;
+}
+
+.tbl-company-owner {
+  font-size: 13px;
+  font-style: italic;
+}
+
+.newformcard {
+   margin-top: 20px;
+}
+
+.main-body-card {
+
+   background-color: #f2f2f2;
+}
+
+.rounded {
+   border-radius:.25rem!important
+}
+
+.dropdown {
+  margin-right: 20px;
+}
+
+.dropdown-menu {
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.update-framework-name {
+  margin-top: 0px;
+  font-style: italic;
+  font-size: 20px;
+  padding: 0;
+}
+
+
+.modal-header {
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    color: #fff;
+
+    background-color: #74ae98 ;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+ }
+
+ .results tr[visible='false'],
+ .no-result{
+   display:none;
+ }
+
+ .results tr[visible='true']{
+   display:table-row;
+ }
+
+ .counter{
+   padding:8px;
+   color:#ccc;
+ }
+
+ .layout-subheader {
+   font-weight: bold;
+   font-size: 24px;
+   font-family: 'Manjari', serif;
+
+ }
+
+.assessment-subheader {
+  font-size: 24px;
+  font-family: 'Manjari', serif;
+  font-weight: bold;
+}
+
+/* not active */
+.nav-pills .nav-link:not(.active) {
+    background-color: #818e94;
+}
+
+
+/* active (faded) */
+.nav-pills .nav-link {
+    background-color: #74ae98;
+    color: white;
+}
+
+
+.pct_complete {
+  font-weight: bold;
+}
+
+.btn.outline {
+	background: none;
+	padding: 12px 22px;
+}
+
+.btn-primary.outline {
+	border: 2px solid #0099cc;
+	color: #0099cc;
+}
+
+.btn-primary.outline:hover, .btn-primary.outline:focus, .btn-primary.outline:active, .btn-primary.outline.active, .open > .dropdown-toggle.btn-primary {
+	#color: #33a6cc;
+	#border-color: #33a6cc;
+  color: #fff;
+  background-color: #33a6cc;
+  border-color: #33a6cc; /*set the color you want here*/
+}
+
+.btn-primary.outline:active, .btn-primary.outline.active {
+	border-color: #007299;
+	color: #007299;
+	box-shadow: none;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,.7);
+}
+
+
+.overlay__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.overlay__spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
+
+.answer-header {
+  font-weight: bold;
+}
+
+.message-modal {
+  position: absolute;
+  float: left;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.message-modal-success {
+  background: green;
+  position: absolute;
+  float: left;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.message-modal-failure {
+  background: red;
+  position: absolute;
+  float: left;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.percent_status {
+  float: right;
+  width: 300px;
+  padding: 10px;
+}
+
+div#card#leftside {
+  width: 20%;
+}
+
+div#card#rightside {
+  width: 80%;
+}
+
+.center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 5px solid #FFFF00;
+  padding: 10px;
+}

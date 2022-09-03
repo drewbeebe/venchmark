@@ -1,0 +1,12 @@
+<!-- templates/vendor_new.html -->
+{% extends 'base.html' %}
+{% block content %}
+<h1>Modify User</h1>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-link"
+           type="button" value="Cancel"
+           onclick="window.history.go(-1);"/>
+    <input type="submit" value="Update">
+</form>
+{% endblock %}

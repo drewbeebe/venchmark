@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Venchmark - New Vendor{% endblock %}
+
+{% block content %}
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ field.name }}: {{  error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% load crispy_forms_tags %}
+{% load class_name %}
+{% if user.is_authenticated %}
+
+
+
+
+<body>
+  <div class="card main-body-card rounded mb-0">
+    <div class="card-body">
+      <!-- <div class="PageHeader"><h1>New Vendor  </h1></div -->
+      <div class="PageHeader"><h3 class='my-0 py-0'>{{ count }} results for <b>{{ query }}</b></h3></div>
+      <p>
+        <!--
+          <div class='row title-row my-5'>
+              <div class='col-12 py-0'>
+                  <h3 class='my-0 py-0'>{{ count }} results for <b>{{ query }}</b></h3>
+              </div>
+          </div> -->
+
+          <div class="table-responsive">
+
+                <!-- <table id="search-table" class="table table-hover table-fixed" > -->
+                <table id="search-table" class="table table-hover table-light table-bordered venchmark-table results">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="display: none;">#</th>
+                            <th>Result Type</th>
+                            <th>Match</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                      {% for object in object_list %}
+                          {% with object|class_name as klass %}
+                          <!-- <tr> -->
+                          {% if klass == 'Company' %}
+                          <tr class="table-row" data-href="/company/{{ object.uuid }}/">
+                               <div class='row'>
+                                 <div class='col-12'>
+                                   <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">Vendor</span></td>
+                                   <td class="tabledit-view-mode" style="cursor: pointer;" width="10%">{{ object.name }}</td>
+                                </div>
+                              </div>
+                            </tr>
+                          {% elif klass == 'User' %}
+                          <tr class="table-row" data-href="/people/{{ object.uuid }}/">
+                                 <div class='row'>
+                                   <div class='col-12'>
+                                     <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">User</span></td>
+                                     <td class="tabledit-view-mode" style="cursor: pointer;" width="10%">{{ object.first_name }} {{ object.last_name }}</td>
+                                  </div>
+                                </div>
+                          </tr>
+
+                          {% elif klass == 'Framework' %}
+                          <tr class="table-row" data-href="/framework/{{ object.uuid }}/">
+                               <div class='row'>
+                                    <div class='col-12'>
+                                       <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">Framework</td>
+                                      <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ object.name }}</td>
+                                    </div>
+                                </div>
+                          </tr>
+                          {% elif klass == 'FrameworkSource' %}
+                          <tr class="table-row" data-href="/source/{{ object.uuid }}/">
+                                 <div class='row'>
+                                      <div class='col-12'>
+                                         <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">Framework Source</td>
+                                         <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ object.name }}</td>
+                                      </div>
+                                  </div>
+                            </tr>
+                          {% elif klass == 'FrameworkControls' %}
+                          <tr class="table-row" data-href="/control/{{ object.uuid }}/">
+                                   <div class='row'>
+                                      <div class='col-12'>
+                                         <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">Framework Control</td>
+                                         <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span"> {{ object.subcategoryID }}</td>
+                                      </div>
+                                  </div>
+                          </tr>
+                          {% elif klass == 'Assessment' %}
+                          <tr class="table-row" data-href="/assessment/{{ object.uuid }}/status/">
+                                   <div class='row'>
+                                        <div class='col-12'>
+                                           <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">Assessment</td>
+                                           <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span"> {{ object.name }}</td>
+                                        </div>
+                                    </div>
+                          </tr>
+                          {% else %}
+                               <div class='row'>
+                                 <div class='col-12 col-lg-8 offset-lg-4'>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ klass }}</td>
+                                    <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span"> <a href='{{ object.get_absolute_url }}'>{{ object }} | {{ object|class_name }}</a></td>
+                                </div>
+                               </div>
+                            {% endif %}
+
+                        {% endwith %}
+
+                          </td>
+                      </tr>
+                      {% empty %}
+                      <td>
+                      <div class='row'>
+                          <div class='col-12 col-md-6 mx-auto my-5 py-5'>
+                          <form method='GET' class='' action='.'>
+
+                              <div class="input-group form-group-no-border mx-auto" style="margin-bottom: 0px; font-size: 32px;">
+                                  <span class="input-group-addon cfe-nav" style='color:#000'>
+                                      <i class="fa fa-search" aria-hidden="true"></i>
+                                  </span>
+                                  <input type="text" name="q" data-toggle="popover" data-placement="bottom" data-content="Press enter to search" class="form-control cfe-nav mt-0 py-3" placeholder="Search..." value="" style="" data-original-title="" title="" autofocus="autofocus">
+                              </div>
+
+                          </form>
+
+                          </div>
+                      </div>
+                    </td>
+                  </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <script>
+                        // Basic example
+                  $(document).ready(function () {
+                    $(".table-row").click(function() {
+                          window.document.location = $(this).data("href");
+                    });
+                    $('#search-table').DataTable({
+                      "paging": true // false to disable pagination (or any other option)
+                    });
+                    $('.dataTables_length').addClass('bs-select');
+                  });
+                  </script>
+            </div>
+          </div>
+{% endif %}
+
+{% endblock content %}

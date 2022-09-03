@@ -1,0 +1,315 @@
+<html>
+<head>
+
+
+
+
+{% block content %}
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!--
+<script src='https://www.chartjs.org/dist/2.7.3/Chart.bundle.js'></script>
+<script src='https://www.chartjs.org/samples/latest/utils.js'></script>
+
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+-->
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'></script>
+</head>
+<body>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+
+<div class="report header">
+<h1>{{ report.name }}</h1>
+</div>
+<p>
+  <p>
+<div class="executive summary">
+  <div class="executive summary heading">
+    <h3>Executive Summary</h3>
+  </div>
+  {{ report.author.company.name }} has performed a review of the business practices and security practices for the vendor, <b>{{ report.assessment.vendor.name }}</b>. The risks associated with {{ report.assessment.vendor.name }}'s business practices and security mechanisms has been determined by the analyst and author of this report.
+  You will find that the author has documented which of the vendor's business and security practices are in compliance with {{ report.author.company.name }}'s security controls and which are not in compliance.
+  <p>Of the controls that the author has determined are not in compliance, a risk assessment has been performed and a risk rating has been assigned to each of those controls found not to be in compliance with company controls.
+  <p>The vendor, {{ report.assessment.vendor.name }} was provided a questionnaire that was made up of Information Security controls, as documented in the frameworks assigned in this assessment.
+  <p>This executive summary is the result of reviewing {{ report.assessment.vendor.name }}’s provided answers and documentation and is intended to provide the requestor and {{ report.author.company.name }} IT Leadership a high-level overview of the risks associated with the vendor so that {{ report.author.company.name }} IT Leadership may make an informed decision regarding the purchase of services from the vendor.
+<p>
+<p>
+</div class="findings summary">
+The table below details the number of gaps found between {{ report.assessment.vendor.name }}’s processes and the Security Controls documented in the {{ report.author.company.name }} Vendor Cybersecurity Compliance Program (based on the documented frameworks).
+      <div class="findings table">
+      </div>
+<p>Figure 1 (below) illustrates the percentage of {{ report.author.company.name }} Vendor Cyber Security Controls that had findings resulting from the Review.
+      <div class="vendor security control compliance chart">
+        <div id="canvas-holder" style="width:50%" align="center">
+          <canvas id="assessmentComplianceChart"> <!-- width="800" height="450"></canvas> -->
+        </div>
+
+        <script>
+
+
+        var endpoint='/api/v1/assessment/{{ report.assessment.uuid }}/compliance/'
+
+
+        var defaultData = [];
+        var labels = [];
+        // Create a request variable and assign a new XMLHttpRequest report to it.
+        //$.ajax({
+        //var myJSON;
+
+        $.ajax({
+          "url" : "/api/v1/assessment/{{ report.assessment.uuid }}/compliance/",
+          "type" : "GET",
+          "beforeSend" : function (xhr) {
+              xhr.setRequestHeader("Authorization", "Token {{ token }}");
+          },
+              //"url" : "/api/v1/controls/{{ report.orderID }}/?format=datatables",
+
+          dataType: 'json',
+            success: function (data) {
+                  //Do stuff with the JSON data
+                  function setChart(){
+                    var ctx = document.getElementById("assessmentComplianceChart");
+                    var piechart = new Chart(ctx, {
+                        type: 'doughnut',
+                        options: {
+                          title: {
+                              display: true,
+                              text: 'Vendor Cyber Security Control Adherence'
+                          }
+                        },
+                        data: {
+                            labels: ["Compliant Controls", "Non-Compliant Controls" ],
+                            datasets: [{
+                                label: 'Vendor Compliance',
+                                data: [data.compliant_controls, data.non_compliant_controls ],
+                                backgroundColor: [
+
+                                        window.chartColors = '#00FF00', //window.chartColors.green,
+                                        window.chartColors = '#FF0000', //window.chartColors.red,
+
+                          ],
+
+                                //data: ['20','15', '10'],
+                            }]
+                        }
+                    });
+                  }
+
+                  setChart()
+
+          }
+        });
+
+
+        //$.getJSON(endpoint, function(data){
+
+
+
+
+      //  }
+
+        //)
+        </script>
+      </div>
+{{ report.assessment.vendor.name }} was compliant with {{ report.c_controls }} of the Security Controls documented in assigned frameworks.
+<p><p>{{ report.nc_controls }} security controls were marked "Not Compliant”, and [[NEED TO ADD PARTIALLY COMPLIANT]]. This determination was made because the vendor has either implemented an informal, undocumented process or a partial process but hasn’t provided proof of processes in their respective environments.
+  [[ NEED TO ADD NOTES FROM AUTHOR FOR REVIEW   ]]
+<div>
+<p>
+<p>
+</div>
+<div class="executive risk assessment">
+  <div class="executive risk assessment heading">
+    <h3>Risk Assessment</h3>
+  </div>
+  <p>While {{ report.assessment.vendor.name }} was able to provide documentation that outlined some robust processes, there were some processes that could be improved.
+  <p>The table below details the number of controls determined to be of High, Moderate and Low Risk.
+    <div class="controls risk table">
+      <div id="canvas-holder" style="width:50%" align="center">
+        <canvas id="assessmentRiskChart"> <!-- width="800" height="450"></canvas> -->
+      </div>
+
+      <script>
+
+
+      var endpoint='/api/v1/assessment/{{ report.assessment.uuid }}/risk/'
+
+
+      var defaultData = [];
+      var labels = [];
+      // Create a request variable and assign a new XMLHttpRequest report to it.
+      //$.ajax({
+      //var myJSON;
+
+      $.ajax({
+        "url" : "/api/v1/assessment/{{ report.assessment.uuid }}/risk/",
+        "type" : "GET",
+        "beforeSend" : function (xhr) {
+            xhr.setRequestHeader("Authorization", "Token {{ token }}");
+        },
+            //"url" : "/api/v1/controls/{{ report.orderID }}/?format=datatables",
+
+        dataType: 'json',
+          success: function (data) {
+                //Do stuff with the JSON data
+                function setChart(){
+                  var ctx = document.getElementById("assessmentRiskChart");
+                  var piechart = new Chart(ctx, {
+                      type: 'doughnut',
+                      options: {
+                        title: {
+                            display: true,
+                            text: 'Vendor Risk Profile'
+                        }
+                      },
+                      data: {
+                          labels: ["High Risk Controls", "Moderate Risk Controls", "Low Risk Controls" ],
+                          datasets: [{
+                              label: 'Vendor Risk',
+                              data: [data.high_risk_controls, data.moderate_risk_controls, data.low_risk_controls ],
+                              backgroundColor: [
+                                window.chartColors = '#FF0000', //window.chartColors.red,
+                                window.chartColors = '#FFA500', //window.chartColors.orange,
+                                window.chartColors = '#00FF00', //window.chartColors.green,
+
+                        ],
+
+                              //data: ['20','15', '10'],
+                          }]
+                      }
+                  });
+                }
+
+                setChart()
+
+        }
+      });
+
+
+      //$.getJSON(endpoint, function(data){
+
+
+
+
+    //  }
+
+      //)
+      </script>
+    </div>
+  <p>The chart below provides an overview of the {{ report.assessment.vendor.name }} Vendor Risk Profile.
+    <div class="risk profile chart">
+    </div>
+  <p>It is {{ report.author.company.name }}'s opinion that the risk associated with doing business with {{ report.assessment.vendor.name }} is <b>{{ report.assessment.vendor.risk_rating }}</b>.
+</div>
+<div class="controls compliance">
+  <div class="controls compliance heading">
+    <h3>Control Compliance</h3>
+  </div>
+    <p>{{ report.assessment.vendor.name }} Control Compliance
+      <p>
+      <p>
+      {% if questions %}
+                <div class="table-responsive">
+
+                      <table class="table table-bordered" id="control_compliance_table">
+                          <thead>
+                              <tr>
+                                  <th style="display: none;">#</th>
+                                  <th>Control</th>
+                                  <th>Question</th>
+                                  <th>Answer</th>
+                                  <th>Compliance</th>
+                                  <th>Notes</th>
+                              </tr>
+                          </thead>
+
+                          <tbody>
+                            {% for question in questions %}
+                              <tr>
+                                  <!-- <th scope="row" style="display: none;">1</th> -->
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ question.control.subcategoryID }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ question.question }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.answer }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ form.compliance }}
+                                      </span></td>
+                                  <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ question.notes }}
+                                  </span></td>
+
+                                </td>
+                            </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+
+                  </div>
+              </div>
+      {% endif %}
+</div>
+<div class="controls risk">
+  <div class="controls RISK heading">
+    <h3>Risk Assignment</h3>
+  </div>
+    <p>{{ report.assessment.vendor.name }} Security Control Risks
+      <div class="table-responsive">
+
+            <table class="table table-bordered" id="control_risks_table">
+                <thead>
+                    <tr>
+                        <th style="display: none;">#</th>
+                        <th>Control</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Compliance</th>
+                        <th>Notes</th>
+                        <th>Risk</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                  {% for nc_question in nc_questions %}
+                    <tr>
+                        <!-- <th scope="row" style="display: none;">1</th> -->
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="10%"><span class="tabledit-span">{{ nc_question.control.subcategoryID }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="40%"><span class="tabledit-span" style="">{{ nc_question.question }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.answer }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.compliance }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.notes }}
+                        </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.likelihood }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.impact }}
+                            </span></td>
+                        <td class="tabledit-view-mode" style="cursor: pointer;" width="50%"><span class="tabledit-span">{{ nc_question.risk_rating }}
+                            </span></td>
+
+                      </td>
+                  </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<div class="conclusion">
+</div>
+
+
+{% endblock %}
+</body>
+</html>

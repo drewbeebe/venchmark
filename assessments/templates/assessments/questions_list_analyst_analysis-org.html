@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% block title %}Venchmark - Questionnaire{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+
+          <!-- <body> -->
+            <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+            <style type='text/css'>
+
+
+              .range-wrap {
+                position: relative;
+                margin: 0 auto 3rem;
+              }
+              .range {
+                width: 100%;
+              }
+              .bubble {
+                background: #28a745;
+                color: white;
+                padding: 4px 12px;
+                position: absolute;
+                border-radius: 4px;
+                left: 50%;
+                transform: translateX(-50%);
+              }
+              .bubble::after {
+                content: "";
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: red;
+                top: -1px;
+                left: 50%;
+              }
+
+
+
+            </style>
+
+            <div class="card main-body-card rounded mb-0">
+              <div class="card-body">
+                {% with object_list|first as first_object %}
+                    <div class="PageHeader"><h1>{{ first_object.assessment.name }} Questionnaire (Vendor))</h1></div>
+                      <div class="PagesubHeader"><h3>({{first_object.assessment.status}})</h3></div>
+
+                <p>
+
+                {% endwith %}
+
+                {% if object_list %}
+                  {% with object_list|first as first_object %}
+                      {% if first_object.assessment.status == "IN_ANALYSIS" %}
+
+                      <div class="listing">
+                        <h3>Questionnaire has been submitted for Analysis. No further work can be done unless the Customer re-sends the Questionnaire to you.</h3>
+                      </div>
+                      {% else %}
+                          <div class="listing">
+                            <!-- bootstrap tables CSS -->
+                            <link href="{% static 'bs/css/bootstrap-table.min.css' %}" rel='stylesheet'>
+                            <script src="{% static 'bs/js/bootstrap-table.min.js' %}"></script>
+
+                            <div class="form-group pull-right">
+                                <input type="text" class="search form-control" placeholder="Search ...">
+                            </div>
+                            <span class="counter pull-right"></span>
+
+                            <table class="table table-hover table-light table-bordered venchmark-table results vendor-question-table" id="questionsTable" data-pagination="true" data-page-list="[10, 25, 50, 100, all]" data-side-pagination="server">
+
+
+                            <thead class="thead-light">
+                              <tr>
+
+
+                                  <th>Question</th>
+
+                                  <th>Answer</th>
+                                  <th>
+                                    Maturity
+                                  </th>
+                                  <!-- <th>Answer</th> -->
+
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for question in object_list %}
+
+                              <!-- <tr class="edit-question-{{ question.uuid }}" data-id="{{ question.uuid }}" data-href="#" href="#" data-toggle="modal" data-target="#questionModal"> -->
+                              <tr>
+
+                                <!-- Button trigger modal -->
+                                <!--<button type="button" name="openBtn" class="btn btn-success openBtn" data-toggle="modal" data-target="#exampleModal" onclick="load_framework_modal()"> -->
+                                <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="questionModal" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h4 class="modal-title" id="myModalLabel">Answer: {{ question.control.subcategoryID }}</h4>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                              </button>
+                                            </div>
+                                            <div class="modal-body">
+                                              {{ question.question }}
+                                              <p>
+                                                <textarea id="answer" rcols="10" rows="5" charswidth="23"></textarea>
+                                              </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                              <button type="button" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                <td><b>{{ question.control.subcategoryID }}</b><br />{{ question.question }}</td>
+
+
+                                <td contenteditable='true' id='answer'>
+                                    <textarea id="answer" rcols="20" rows="5" ></textarea>
+                                </td>
+                                <td>
+                                  <div class="range-wrap">
+                                    <input type="range" class="range" min="1" max="5">
+                                    <output class="bubble"></output>
+                                  </div>
+                                  <script>
+
+
+                                          const allRanges = document.querySelectorAll(".range-wrap");
+                                          allRanges.forEach(wrap => {
+                                          const range = wrap.querySelector(".range");
+                                          const bubble = wrap.querySelector(".bubble");
+
+                                          range.addEventListener("input", () => {
+                                            setBubble(range, bubble);
+                                          });
+                                          setBubble(range, bubble);
+                                          });
+
+                                          function setBubble(range, bubble) {
+                                          const val = range.value;
+                                          const min = range.min ? range.min : 0;
+                                          const max = range.max ? range.max : 100;
+                                          const newVal = Number(((val - min) * 100) / (max - min));
+                                          bubble.innerHTML = val;
+
+                                          // Sorta magic numbers based on size of the native UI thumb
+                                          bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+                                          }
+
+
+                                  </script>
+
+
+
+                                </td>
+                                  <!-- <button class="create-answer-{{ question.uuid }} btn btn-lg btn-primary" data-toggle="modal" data-id="{{ question.uuid }}" data-target="#modal"><i class="fas fa-check-square"></i></button>
+                                  <script type="text/javascript">
+                                  var formAjaxSubmit = function(form, modal) {
+                                    $(form).submit(function (e) {
+                                    e.preventDefault();
+                                    $.ajax({
+                                        type: $(this).attr('method'),
+                                        url: $(this).attr('action'),
+                                        data: $(this).serialize(),
+                                        success: function (xhr, ajaxOptions, thrownError) {
+                                            if ( $(xhr).find('.has-error').length > 0 ) {
+                                                $(modal).find('.modal-body').html(xhr);
+                                                formAjaxSubmit(form, modal);
+                                            } else {
+                                                $(modal).modal('toggle');
+                                            }
+                                        },
+                                        error: function (xhr, ajaxOptions, thrownError) {
+                                            // handle response errors here
+                                        }
+                                    });
+                               });
+                              }
+                              $(document).ready(function(){
+                              //var url = "/frameworks/new/"
+                              var url = "/question/update/{{ question.uuid }}/"
+                              jQuery('#openBtn').click(function(e) {
+                                $('.modal-body').load(url,function(result){
+                                  $('#form-modal').modal({show:true});
+                                  formAjaxSubmit('#form-modal-body form', '#form-modal');
+                                });
+                              });
+                              });
+                            </script> -->
+
+                                  </td>
+                                <!-- <td>{{ question.control.framework.source.acronym }} {{ question.control.framework.short_name }}</td> -->
+                                <!--
+                                <td align="center"><a href="/control/update/{{ control.uuid }}/"><button class="modify-control-{{ control.uuid }} btn btn-primary"><i class="fa fa-pencil"></i></button></a></td>
+                                <td align="center"><button class="delete-control-{{ control.uuid }} btn btn-danger" data-toggle="modal" data-id="{{ control.uuid }}" data-target="#modal" id="delete-control-{{ control.uuid }}"><i class="fas fa-trash-alt"></i></button>
+                                  <script type="text/javascript">
+                                  $(document).ready(function() {
+                                      $(".delete-control-{{ control.uuid }}").modalForm({
+                                         formURL: "/control/{{ control.uuid }}/delete/"
+                                       });
+                                  });
+                                  </script>
+
+                              -->
+                              </tr>
+
+                              {% endfor %}
+                            </tbody>
+                            </table>
+                            <script>
+                            $(document).ready(function() {
+                                $(".search").keyup(function () {
+                                  var searchTerm = $(".search").val();
+                                  var listItem = $('.results tbody').children('tr');
+                                  var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+
+                                $.extend($.expr[':'], {'containsi': function(elem, i, match, array){
+                                      return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                                  }
+                                });
+
+                                $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+                                  $(this).attr('visible','false');
+                                });
+
+                                $(".results tbody tr:containsi('" + searchSplit + "')").each(function(e){
+                                  $(this).attr('visible','true');
+                                });
+
+                                var jobCount = $('.results tbody tr[visible="true"]').length;
+                                  $('.counter').text(jobCount + ' item');
+
+                                if(jobCount == '0') {$('.no-result').show();}
+                                  else {$('.no-result').hide();}
+                                    });
+                              });
+                            </script>
+                            {% with object_list|first as first_object %}
+                            {% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
+                               {% if first_object.assessment.status == "QUESTIONNAIRE_REVIEW" %}
+                                <a href="/questionnaire/{{ first_object.assessment.uuid }}/approved/" class="btn btn-success ml-2">Submit the Questionnaire to Vendor</a>
+                               {% elif first_object.assessment.status == "VENDOR_SUBMIT" %}
+                                <a href="/assessment/{{ first_object.assessment.uuid }}/status-change" class="btn btn-success ml-2">Submit to Analysis</a>
+
+                               {% endif %}
+                            {% endwith %}
+                          </div>
+
+                      {% endif %}
+                      {% endwith %}
+
+                    {% else %}
+                        <p>No questions currently in this questionnaire.</p>
+                        <p>Would you like to generate a Questionnaire now?</p>
+                        <form class="form-inline ml-auto">
+
+                          <a href="" class="btn btn-primary ml-2">No</a>
+                        </form>
+
+                    {% endif %}
+
+            </div>
+          </div>
+
+          </body>
+
+
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}

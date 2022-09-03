@@ -1,0 +1,289 @@
+
+{% load static %}
+{% load bootstrap_pagination %}
+
+
+<script>
+  var formAjaxSubmit = function(form, modal) {
+    $(form).submit(function (e) {
+      e.preventDefault();
+    $.ajax({
+        type: $(this).attr('method'),
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        success: function (xhr, ajaxOptions, thrownError) {
+            if ( $(xhr).find('.has-error').length > 0 ) {
+                $(modal).find('.modal-body').html(xhr);
+                formAjaxSubmit(form, modal);
+            } else {
+                $(modal).modal('toggle');
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            // handle response errors here
+        }
+    });
+});
+}
+
+
+function getCookie(c_name)
+{
+  if (document.cookie.length > 0)
+  {
+      c_start = document.cookie.indexOf(c_name + "=");
+      if (c_start != -1)
+      {
+          c_start = c_start + c_name.length + 1;
+          c_end = document.cookie.indexOf(";", c_start);
+          if (c_end == -1) c_end = document.cookie.length;
+          return unescape(document.cookie.substring(c_start,c_end));
+      }
+  }
+  return "";
+};
+
+
+
+$(document).ready(submitAnswer() {
+
+
+  // process the form
+  $('form').submit(function(event) {
+      $.ajaxSetup({
+          headers: { "X-CSRFToken": getCookie("csrftoken") }
+      });
+      // get the form data
+      // there are many ways to get this data using jQuery (you can use the class or id also)
+      var formData = {
+          'uuid'              : $('input[name=uuid]').val(),
+          'answer'             : $('input[name=answer]').val(),
+          //'superheroAlias'    : $('input[name=superheroAlias]').val()
+      };
+
+      // process the form
+      //$.ajaxSetup({
+      //        headers: { "X-CSRFToken": getCookie("csrftoken") }
+      //    }),
+      $.ajax({
+          type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+          url         : '/answer/{{ question.uuid }}/update/', // the url where we want to POST
+          headers     : { "X-CSRFToken": getCookie("csrftoken"),
+          data        : formData, // our data object
+          dataType    : 'json', // what type of data do we expect back from the server
+                      encode          : true
+      })
+          // using the done promise callback
+          .done(function(data) {
+
+              // log data to the console so we can see
+              console.log(data);
+
+              // here we will handle errors and validation messages
+          });
+
+      // stop the form from submitting the normal way and refreshing the page
+      event.preventDefault();
+  });
+
+});
+
+
+
+</script>
+  <body>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+    <div class="card main-body-card rounded mb-0">
+      <div class="card-body">
+
+            <div class="PageHeader"><h1>{{ assessment.name }} Questionnaire</h1>
+            </div>
+            <div class="AssessmentProgressBar">
+            Questionnaire Progress
+            <div class="progress">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{ complete_pct }}%;" aria-valuenow="{{ complete_pct }}" aria-valuemin="0" aria-valuemax="100">{{ complete_pct }}%</div>
+            </div>
+
+            </div>
+            </div>
+            <div class="PageSubHeader">
+                  <span>
+
+                  </span>
+            </div>
+            <div class="PageSubHeader" style="padding: 25px;">
+
+
+
+               <button id="submitQuestionnaireButton" class="btn btn-primary" onClick="window.location.href='/assessment/{{ uuid }}/status-change/';">Submit Questionnaire</button>
+            </div>
+
+
+
+        {% if object_list %}
+        <div class="listing" style="padding: 10px;">
+
+
+
+
+                <!-- bootstrap tables CSS -->
+                <link href="{% static 'bs/css/bootstrap-table.min.css' %}" rel='stylesheet'>
+                <script src="{% static 'bs/js/bootstrap-table.min.js' %}"></script>
+                <div class="form-group pull-right">
+                    <input type="text" class="search form-control" placeholder="Search ...">
+                </div>
+                <span class="counter pull-right"></span>
+                <table class="table table-hover table-light table-bordered venchmark-table results" id="questionsTable" data-pagination="true" data-page-list="[10, 25, 50, 100, all]" data-side-pagination="server">
+
+                <thead>
+                                  <tr>
+                                      <th style="display: none;">#</th>
+
+                                      <th>Questions Answered: {{ answer_count }} out of {{ question_count }} (Questionnaire is {{ complete_pct }}% Complete)
+                                      </th>
+
+
+                                  <!-- </tr> -->
+                              </thead>
+
+                              <tbody>
+                                {% for question in page_obj %}
+
+                                <script>
+
+                                function toggle(rowID) {
+                                       if( document.getElementById(rowID).style.display=='none' ){
+                                         document.getElementById(rowID).style.display = 'table-row'; // set to table-row instead of an empty string
+                                         document.getElementById(rowID).style.backgroundColor = '#939d9e'; // set to table-row instead of an empty string
+                                       }else{
+                                         document.getElementById(rowID).style.display = 'none';
+                                       }
+                                      }
+                                </script>
+
+                                  <tr onClick="toggle('answer-{{ question.uuid }}');" id="question-{{ question.uuid }}">
+
+                                      <td class="tabledit-view-mode" style="cursor: pointer;" width="40%">
+                                        <span style="font-weight:bold" class="answer-header">{{ question.control.subcategoryID }}</span>
+                                        <span class="tabledit-span" style="">{{ question.question }}</span>
+                                    </td>
+
+                                  </tr>
+                                  <form action="/answer/{{ question.uuid }}/update/" method="POST">
+
+                                      <tr id="answer-{{ question.uuid }}" style="display: none;">
+
+                                      <td>
+                                        <span style="font-weight:bold" class="answer-header">{{ question.control.subcategoryID }} Answer - Enter Vendor Response Here</span>
+                                        <br /><textarea id="answer" name="answer" rows="10" cols="100">{{ question.answer }}</textarea>
+                                          <br /><button id="{{ question.uuiid }}-submit" class="btn btn-primary" onClick="submitAnswer();">Update Answer</button>
+                                          <input type="hidden" name="uuid" value="{{ question.uuid }}">
+                                          <input type="hidden" name="questionnaire_uuid" value="{{ question.questionnaire.uuid }}">
+                                          <input type="hidden" name="assessment_id" value="{{ question.assessment_id }}">
+
+                                          {% csrf_token %}
+                                          </form>
+                                          <button id="{{ question.uuiid }}-evidence-click" class="btn btn-success" onClick="toggle('evidence-{{ question.uuid }}');">Upload Evidence</button>
+                                        </td>
+                                        </tr>
+                                        <tr id="evidence-{{ question.uuid }}" style="display: none;">
+
+                                        <td>
+                                          <span style="font-weight:bold" class="evidence-header">{{ question.control.subcategoryID }} Evidence - Upload Policy or Other Evidence Here</span>
+                                          {% if question.document %}
+                                            <a href="/media/{{ question.document.document }}">{{ question.document.name }}</a>
+                                            <br /><span style="font-weight:bold">Document Description:  </span>
+                                            {{ question.document.description }}
+                                          {% else %}
+                                          <form action="/answer/{{ question.uuid }}/evidence/" method="post" enctype="multipart/form-data">
+                                              <table>
+                                              <tr>
+                                              <td>
+                                              <span style="font-weight:bold">Document Name:  </span>
+                                              </td>
+                                              <td>
+                                              <input type="text" name="document_name" value="{{ question.document.name }}" size="50"/>
+                                              </td>
+                                              </tr>
+                                              <tr>
+                                              <td>
+                                              <br /><span style="font-weight:bold">Document Description:  </span>
+                                              </td>
+                                              <td>
+                                              <textarea id="answer" name="document_description" rows="5" cols="100">{{ question.document.description }}</textarea>
+                                              </td>
+                                              </tr>
+
+                                              <br /><input type="hidden" name="question" value="{{ question.uuid }}">
+                                              <br /><input type="hidden" name="assessment" value="{{ question.assessment.uuid }}">
+                                              <tr>
+                                              <td><span style="font-weight:bold">File to Upload:</span></td>
+                                              <td>
+                                              <input class="btn" name="document" type="file" id="file" />
+
+                                              <input class="btn btn-primary" type="submit" id="submit" value="Submit File" />
+                                              </td>
+                                              </tr>
+
+                                              </table>
+                                              {% csrf_token %}
+                                          </form>
+
+                                          {% endif %}
+
+
+
+                                      </td>
+                                    </tr>
+
+                                  {% endfor %}
+                              </tbody>
+
+                            </table>
+                            <script>
+                            $(document).ready(function() {
+                                $(".search").keyup(function () {
+                                  var searchTerm = $(".search").val();
+                                  var listItem = $('.results tbody').children('tr');
+                                  var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+
+                                $.extend($.expr[':'], {'containsi': function(elem, i, match, array){
+                                      return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                                  }
+                                });
+
+                                $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+                                  $(this).attr('visible','false');
+                                });
+
+                                $(".results tbody tr:containsi('" + searchSplit + "')").each(function(e){
+                                  $(this).attr('visible','true');
+                                });
+
+                                var jobCount = $('.results tbody tr[visible="true"]').length;
+                                  $('.counter').text(jobCount + ' item');
+
+                                if(jobCount == '0') {$('.no-result').show();}
+                                  else {$('.no-result').hide();}
+                                    });
+                              });
+                            </script>
+
+                            {% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
+
+
+        </div>
+
+
+        </div>
+
+      {% else %}
+          <p>No questions have been included in this Questionnaire yet.</p>
+
+
+      {% endif %}
+    </div>
+  </div>
+
+  </body>

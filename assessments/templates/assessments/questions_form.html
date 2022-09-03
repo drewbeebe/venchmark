@@ -1,0 +1,41 @@
+{% block content %}
+
+<form method="post" action="">
+  {% csrf_token %}
+{% load crispy_forms_tags %}
+
+
+ <div class="modal-header">
+    <h3 class="modal-title">{{ question.control.subcategoryID }} ({{ question.control.framework.source.acronym }} {{ question.control.framework.short_name }})</h3>
+
+
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group col-md-6 mb-0">
+      {{ form.question }}
+
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+        {{ form.answer }}
+        <input type="hidden" name="next" value="{{ quuid }}">
+        </div>
+      </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="submit-btn btn btn-primary">Submit Answer</button>
+  </div>
+
+</form>
+
+{% endblock content %}

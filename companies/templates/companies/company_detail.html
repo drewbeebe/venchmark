@@ -1,0 +1,37 @@
+<!-- templates/vendor_new.html -->
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+
+<h1>Vendor Detail</h1>
+<table class="table table-bordered">
+<tr>
+  <!-- <td>VendorID</td> -->
+  <td>Company Name</td>
+  <td>Company Address</td>
+  <td>State</td>
+  <td>Country</td>
+  <td>Zip Code</td>
+  <td>Vendor URL</td>
+  <td>Vendor Logo</td>
+</tr>
+
+        <tr>
+          <!-- <td>{{ vendor.id }}</td> -->
+          <td>{{ object.name }}</td>
+          <td>{{ object.address1 }}<br>{{ object.address2 }}</td>
+          <td>{{ object.country }}</td>
+          <td>{{ object.state }}</td>
+          <td>{{ object.zip }}</td>
+          <td><a href="{{ object.url }}" target="mothership">{{ object.url }}</a></td>
+          <td><img src="{{ object.logo }}" alt="{{ object.name }} Logo"></td>
+          <td><a href="/company/{{ company.uuid }}/delete"><button type="button" class="btn btn-secondary">Delete</button></a>  <a href="/company/update/{{ company.uuid }}"><button type="button" class="btn btn-secondary">Modify</button></a></td>
+        </tr>
+
+
+
+</table>
+{% endblock %}

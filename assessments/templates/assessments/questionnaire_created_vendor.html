@@ -1,0 +1,150 @@
+
+{% load static %}
+{% load bootstrap_pagination %}
+
+
+<script>
+  var formAjaxSubmit = function(form, modal) {
+    $(form).submit(function (e) {
+      e.preventDefault();
+    $.ajax({
+        type: $(this).attr('method'),
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        success: function (xhr, ajaxOptions, thrownError) {
+            if ( $(xhr).find('.has-error').length > 0 ) {
+                $(modal).find('.modal-body').html(xhr);
+                formAjaxSubmit(form, modal);
+            } else {
+                $(modal).modal('toggle');
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            // handle response errors here
+        }
+    });
+});
+}
+
+
+function getCookie(c_name)
+{
+  if (document.cookie.length > 0)
+  {
+      c_start = document.cookie.indexOf(c_name + "=");
+      if (c_start != -1)
+      {
+          c_start = c_start + c_name.length + 1;
+          c_end = document.cookie.indexOf(";", c_start);
+          if (c_end == -1) c_end = document.cookie.length;
+          return unescape(document.cookie.substring(c_start,c_end));
+      }
+  }
+  return "";
+};
+
+
+
+$(document).ready(submitAnswer() {
+
+
+  // process the form
+  $('form').submit(function(event) {
+      $.ajaxSetup({
+          headers: { "X-CSRFToken": getCookie("csrftoken") }
+      });
+      // get the form data
+      // there are many ways to get this data using jQuery (you can use the class or id also)
+      var formData = {
+          'uuid'              : $('input[name=uuid]').val(),
+          'answer'             : $('input[name=answer]').val(),
+          //'superheroAlias'    : $('input[name=superheroAlias]').val()
+      };
+
+      // process the form
+      //$.ajaxSetup({
+      //        headers: { "X-CSRFToken": getCookie("csrftoken") }
+      //    }),
+      $.ajax({
+          type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+          url         : '/answer/{{ question.uuid }}/update/', // the url where we want to POST
+          headers     : { "X-CSRFToken": getCookie("csrftoken"),
+          data        : formData, // our data object
+          dataType    : 'json', // what type of data do we expect back from the server
+                      encode          : true
+      })
+          // using the done promise callback
+          .done(function(data) {
+
+              // log data to the console so we can see
+              console.log(data);
+
+              // here we will handle errors and validation messages
+          });
+
+      // stop the form from submitting the normal way and refreshing the page
+      event.preventDefault();
+  });
+
+});
+
+
+
+</script>
+  <body>
+
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+    <div class="card main-body-card rounded mb-0">
+      <div class="card-body">
+
+            <div class="PageHeader"><h1>Assessment Questionnaire</h1>
+            </div>
+            <div class="AssessmentProgressBar">
+            Assessment Progress
+              {% if assessment.status == "CREATED" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 5%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">10%</div>
+                  </div>
+              {% elif assessment.status == "QUESTIONNAIRE_REVIEW" %}
+                      <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 15%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                      </div>
+              {% elif assessment.status == "VENDOR_SUBMIT" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  </div>
+              {% elif assessment.status == "IN_ANALYSIS" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                  </div>
+              {% elif assessment.status == "REPORT_GENERATED" %}
+                      <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                      </div>
+              {% elif assessment.status == "ASSESSMENT_COMPLETE" %}
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                  </div>
+              {% endif %}
+            </div>
+            </div>
+            <div class="PageSubHeader">
+                  <span>
+
+                  </span>
+            </div>
+
+
+            <div class="alert alert-primary" role="alert">
+              This assessment has been created but has not yet been submitted for Vendor input.
+            </div>
+
+
+
+
+
+    </div>
+  </div>
+
+  </body>

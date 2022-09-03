@@ -1,0 +1,111 @@
+<!-- message box on the status of the assessment -->
+
+
+
+{% load crispy_forms_tags %}
+
+{% if not questionnaire %}
+  <div class="alert alert-primary" role="alert">
+    This assessment has been created but a Questionnaire has not yet been created for Vendor input.
+    <br>To do this, you click the button below marked "Create Questionnaire"
+  </div>
+{% else %}
+  <div class="alert alert-primary" role="alert">
+    This assessment has been created but has not yet been submitted for Vendor input.
+    <br>To do this, you should complete reviewing the questions in this Assessment's associated Questionnaire.
+    <br>This can be accomplished by clicking the button below marked "Review Questionnaire"
+  </div>
+{% endif %}
+
+{% if not assessment.vendor_contact %}
+<div class="alert alert-danger" role="alert">
+  This assessment has not had a Vendor Point of Contact assigned. Without adding a Vendor POC, you won't be able to send the questionnaire to the Vendor for their input
+</div>
+{% endif %}
+
+{% if not assessment.analyst.email %}
+<div class="alert alert-danger" role="alert">
+  This assessment has not had an Analyst assigned. Without adding an analyst, you won't be able to have someone review the Vendor Questionnaire once they've completed it.
+</div>
+{% endif %}
+
+<div  class="form-row " >
+  <div  class="col form-group col-md-8 mb-0" >
+    <div id="div_id_vendor" class="form-group"> <label for="id_vendor" class=" requiredField">
+               Vendor:<span class="asteriskField">*</span> </label>
+      <input type="text" name="vendor" size="75" placeholder="{{ assessment.vendor.name }}" class="textinput textInput form-control" required id="id_vendor" disabled=True></input>
+  </div>
+
+  {% if assessment.vendor_contact %}
+  <div  class="form-row " >
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_vendor_contact" class="form-group"> <label for="id_vendor_contact" class=" requiredField">
+               Vendor POC:<span class="asteriskField">*</span> </label>
+         <input type="text" name="vendor_contact" size="75" placeholder="{{ assessment.vendor_contact.email }}" class="textinput textInput form-control" required id="id_vendor_contact" disabled=True></input>
+       </div> <!-- close div_id_vendor_contact -->
+    </div>  <!-- close col -->
+  {% else %}
+  <div  class="form-row " >
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_vendor_contact" class="form-group"> <label for="id_vendor_contact" class=" requiredField">
+               Vendor POC:<span class="asteriskField">*</span> </label>
+               <input type="text" name="vendor_contact" size="75" placeholder="No Vendor Contact Entered ..." class="textinput textInput form-control" required id="id_vendor_contact" disabled=True></input>
+      </div> <!-- close div_id_vendor_contact -->
+  </div> <!-- close col -->
+  {% endif %}
+
+  <!-- check if analyst exists -->
+  {% if assessment.analyst %}
+
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_analyst" class="form-group">
+        <label for="id_analyst" class=" requiredField">
+               Analyst:<span class="asteriskField">*</span>
+        </label>
+        <input type="text" name="analyst" size="75" placeholder="{{ assessment.analyst.email }}" class="textinput textInput form-control" required id="id_analyst" disabled=True></input>
+      </div>
+    </div> <!-- close col -->
+  </div> <!-- close row -->
+  {% else %}
+
+    <div  class="col form-group col-md-6 mb-0" >
+      <div id="div_id_analyst" class="form-group">
+        <label for="id_analyst" class=" requiredField">
+               Analyst:<span class="asteriskField">*</span>
+        </label>
+        <input type="text" name="analyst" size="75" placeholder="No Analyst Entered ..." class="textinput textInput form-control" required id="id_analyst" disabled=True></input>
+      </div>
+    </div>  <!--close col-->
+  </div><!-- close row -->
+  {% endif %}
+
+  <!-- render buttons but only show the Submit to Vendor Button if both analyst and vendor_contact exist -->
+  {% if assessment.vendor_contact.email and assessment.analyst.email %}
+  <div class="modal hide fade" id="LoadingModal">
+
+    <div class="spinner-border text-info" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+
+  </div>
+  <!-- show button for "Submit to Vendor" -->
+      {% if not questionnaire %}
+        <a href="/assessment/{{ assessment.uuid }}/create-questionnaire/"><button type="button" class="btn btn-success">Create Questionnaire</button></a>
+      {% else %}
+        <a href="/assessment/{{ assessment.uuid }}/status-change/"><button type="button" class="btn btn-success">Review Questionnaire</button></a>
+      {% endif %}
+  <a href="/assessment/update/{{ assessment.uuid }}/"><button type="button" class="btn btn-secondary">Edit Assessment</button></a>
+  <a href="/assessments/"><button type="button" class="btn btn-danger">Cancel</button></a>
+  {% else %}
+  <!-- show button for "Edit Assessment" -->
+  {% if not questionnaire %}
+    <a href="/assessment/{{ assessment.uuid }}/create-questionnaire/"><button type="button" class="btn btn-success">Create Questionnaire</button></a>
+  {% else %}
+    <a href="/assessment/{{ assessment.uuid }}/status-change/"><button type="button" class="btn btn-success">Review Questionnaire</button></a>
+  {% endif %}
+  <a href="/assessment/update/{{ assessment.uuid }}/"><button type="button" class="btn btn-success">Edit Assessment</button></a>
+  <a href="/assessments/"><button type="button" class="btn btn-danger">Cancel</button></a>
+  {% endif %}
+
+
+</div>

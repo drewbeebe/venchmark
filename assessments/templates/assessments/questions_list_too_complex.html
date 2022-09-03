@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Venchmark - Vendor Questions{% endblock %}
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+{% load static %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+
+    <body>
+
+      {% if questions %}
+                <!--<script src="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"></script> -->
+                <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+                <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+                <p>
+                <p>
+                <h1>Assessment Questions</h1>
+                <div class="container">
+                    <table id="questions-table" class="table table-striped table-bordered">
+                           <thead>
+                            <tr>
+                              <th>Question ID</th>
+                              <th>Question UUID</th>
+                              <th>Questionnaire ID</th>
+                              <th>Assessment ID</th>
+                              <th>Control ID</th>
+                              <th>Framework</th>
+                              <th>Question</th>
+                              <th>Answer</th>
+                              <th>Compliance</th>
+                              <th>Analyst Notes</th>
+                              <th>Likelihood</th>
+                              <th>Impact</th>
+                              <th>Risk Rating</th>
+                              <th>Provide an Answer</th>
+                              <th>Delete</th>
+                            </tr>
+                          </thead>
+                    </table>
+                </div>
+
+                <script>
+
+                $(document).ready(function() {
+                    var table = $('#questions-table').DataTable({
+                        "paging": true,
+                        "serverSide": true,
+                        "ajax": {
+                            "beforeSend" : function (xhr) {
+                                xhr.setRequestHeader("Authorization", "Token {{ token }}");
+                            },
+                            //"url" : "/api/v1/controls/{{ object.orderID }}/?format=datatables",
+                            "url" : "/api/v1/questions/{{ uuid }}/?format=datatables",
+                            "type" : "GET",
+                          },
+                          "columnDefs": [
+                            { targets: [ 4, 6, 7, 13, ], visible: true},
+                            { targets: '_all', visible: false },
+                            //{ targets: [ 6 ], width: "20%" },
+                            { "width": "10px", "targets": 4 },
+                            { "width": "200px", "targets": 6 },
+                            { "width": "50px", "targets": 7 },
+                            { "width": "10px", "targets": 13 },
+                            { "width": "10px", "targets": 14 },
+                          ],
+                        "columns": [
+                            //{"data": "framework", "searchable": false},
+                            // Use dot notation to reference nested serializers.
+                            // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
+                            //{"data": "Function", "name": "Function"},
+                            //{"data": "FunctionID", "name": "FunctionID"},
+                            {"data": "order_id", "name": "order_id"},
+                            {"data": "uuid", "name": "uuid"},
+                            {"data": "questionnaire", "name": "questionnaire"},
+                            {"data": "assessment", "name": "assessment",
+                                fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                                  $(nTd).html(oData.assessment.name);
+                                  //$(nTd).html('<a href="/people/'+oData.uuid+'/">'+oData.relationship_owner.first_name+'</a>');
+                                  //      $(nTd).html(<a href='/framework/update/');
+                                  }
+                            },
+                            {"data": "control", "name": "control",
+                              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                                $(nTd).html(oData.control.subcategoryID);
+                                //$(nTd).html('<a href="/people/'+oData.uuid+'/">'+oData.relationship_owner.first_name+'</a>');
+                                //      $(nTd).html(<a href='/framework/update/');
+                                }
+                            },
+                            {"data": "control", "name": "control",
+                              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                                $(nTd).html(oData.control.framework.name);
+                                //$(nTd).html('<a href="/people/'+oData.uuid+'/">'+oData.relationship_owner.first_name+'</a>');
+                                //      $(nTd).html(<a href='/framework/update/');
+                                }
+                            },
+                            {"data": "question", "name": "question"},
+                            {"data": "answer", "name": "answer"},
+                            {"data": "compliance", "name": "compliance"},
+                            {"data": "notes", "name": "notes"},
+                            {"data": "likelihood", "name": "likelihood"},
+                            {"data": "impact", "name": "impact"},
+                            {"data": "risk_rating", "name": "risk_rating"},
+                            {"data": "uuid", "name": "uuid",
+
+                            "render": function ( data, type, row, meta ) {
+
+                              var html = '';
+                              html += '<div class="modal fade" tabindex="-1" role="dialog" id="modal">';
+                              html += '            <div class="modal-dialog" role="document">';
+                              html += '              <div class="modal-content">';
+                              html += '              </div>';
+                              html += '            </div>';
+                              html += '          </div>';
+                              html += '          ';
+                              html += '          <!-- Create answer button -->';
+                              html += '          <button class="create-answer btn btn-primary" type="button" name="openBtn"><i class="fas fa-check-square"></i></button>';
+                              html += '          <script type="text/javascript">';
+                              html += '';
+                              html += '          ';
+                              html += '              $(".create-answer").modalForm({';
+                              html += '                  formURL: "/question/update/'+data.uuid+'/"';
+                              html += '              });';
+                              html += '          });';
+                              html += '       <script>';
+                              html += '           var formAjaxSubmit = function(form, modal) {';
+                              html += '             $(form).submit(function (e) {';
+                              html += '             e.preventDefault();';
+                              html += '             $.ajax({';
+                              html += '                 type: $(this).attr(\'method\'),';
+                              html += '                 url: $(this).attr(\'action\'),';
+                              html += '                 data: $(this).serialize(),';
+                              html += '                 success: function (xhr, ajaxOptions, thrownError) {';
+                              html += '                     if ( $(xhr).find(\'.has-error\').length \> 0 ) {';
+                              html += '                         $(modal).find(\'.modal-body\').html(xhr);';
+                              html += '                         formAjaxSubmit(form, modal);';
+                              html += '                     } else {';
+                              html += '                         $(modal).modal(\'toggle\');';
+                              html += '                     }';
+                              html += '                 },';
+                              html += '                 error: function (xhr, ajaxOptions, thrownError) {';
+                              html += '                 }';
+                              html += '             })\;';
+                              html += '        })\;';
+                              html += '     }';
+                              html += '     $(document).ready(function(){';
+                              html += '       var url = "/question/update/'+data.uuid+'/"';
+                              html += '       jQuery(\'#openBtn\').click(function(e) {';
+                              html += '         $(\'.modal-body\').load(url,function(result){';
+                              html += '           $(\'#form-modal\').modal({show:true});';
+                              html += '           formAjaxSubmit(\'#form-modal-body form\', \'#form-modal\');';
+                              html += '         });';
+                              html += '       });';
+                              html += '     });';
+                              html += '';
+                              html += '       <\/script>';
+
+                              return html;
+                              }
+
+                            },
+                            {"data": "uuid", "name": "uuid",
+                              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                                  $(nTd).html('<a href="/question/'+oData.uuid+'/delete"><button class="btn btn-danger" data-title="Delete"><i class="fas fa-trash-alt"></i></button></a>');
+                            //      $(nTd).html(<a href='/framework/update/');
+                                  }
+                            },
+
+                        ]
+
+                    });
+
+                });
+                </script>
+    </body>
+ {% else %}
+     There ain't no questions....
+ {% endif %}
+ {% else %}
+
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a> |
+    <a href="{% url 'signup' %}">signup</a>
+  {% endif %}
+{% endblock %}
