@@ -15,12 +15,19 @@ __This is web-based software__. This means there is no executable file (aka no .
 Installing Venchmark on your server is simple and straight-forward:
 
 Step 1. git clone the repo
+
 Step 2. cd into the repo and run ./genskey.sh
+
 Step 3. run pipenv shell
+
 Step 4. run pip install -r requirements.txt
+
 Step 5. python3 ./manage.py createsuperuser
+
 This will walk you through creating a super user account. You can then use that account to set up the application and users for your organization.
+
 Step 6. python3 ./manage.py runserver
+
 
 -----
 ### User's Manual
