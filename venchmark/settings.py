@@ -245,21 +245,3 @@ CORS_ALLOW_HEADERS = [
 CORS_EXPOSE_HEADERS = ['*',]
 CORS_PREFLIGHT_MAX_AGE = 86400
 
-#FIELD_ENCRYPTION_KEY = os.environ.get(‘FIELD_ENCRYPTION_KEY’, ‘’)
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-#gmail_send/settings.py
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'venchmarkapp@gmail.com'
-EMAIL_HOST_PASSWORD = 'fzvgfyffxmrttbsk' #past the key or password app here
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'Venchmark'
-
-
-# Ensure virtualenv path is part of PATH env var
-###VMARK###os.environ['PATH'] += os.pathsep + os.path.dirname(sys.executable)
-###VMARK###WKHTMLTOPDF_CMD = subprocess.Popen(
-###VMARK###    ['which', os.environ.get('WKHTMLTOPDF_BINARY', 'wkhtmltopdf')], # Note we default to 'wkhtmltopdf' as the binary name
-###VMARK###    stdout=subprocess.PIPE).communicate()[0].strip()
