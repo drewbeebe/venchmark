@@ -9,22 +9,32 @@ from subprocess import STDOUT
 import base64
 import html
 import docx
+#import django-storages
+#from storages.backends.s3boto3 import S3Boto3Storage
+#from storages.backends import s3boto3
+
+##imports for secretfileview
+import logging
+import boto3
+from botocore.exceptions import ClientError
+import requests
 
 #imports for django
-import datetime
-from datetime import datetime
+#import datetime as date
+from datetime import datetime, date
+#from datetime import datetime
 from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse, StreamingHttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic import View, DetailView, CreateView, ListView, DeleteView, FormView, UpdateView, TemplateView
+from django.views.generic import View, DetailView, CreateView, ListView, DeleteView, FormView, UpdateView, TemplateView, RedirectView
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.authtoken.models import Token
 from django.conf import settings
 from braces.views import GroupRequiredMixin
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, BSModalFormView
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -38,7 +48,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import inlineformset_factory
 #from django.core.servers.basehttp import FileWrapper
 from wsgiref.util import FileWrapper
-from venchmark.settings import BASE_DIR
+from venchmark.settings import BASE_DIR, AWS_S3_BUCKET_URL
 from django.contrib.staticfiles import finders
 from django.core.files.base import ContentFile
 from docx.shared import Inches
@@ -47,7 +57,7 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.section import WD_SECTION, WD_ORIENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-
+#from storages.backends.s3boto3 import S3Boto3Storage
 
 #imports for PDF
 from django.utils import timezone
@@ -64,7 +74,7 @@ from .html2docx import html2docx
 #from templated_docs.http import FileResponse
 
 #import cStringIO as StringIO
-from io import StringIO
+from io import StringIO, BytesIO
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.template import Context
@@ -75,10 +85,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
 #local imports
-from .forms import NewAssessmentForm, NewFrameworkForm, NewFrameworkSourceForm, VendorContactQuestionnaireForm, AnalysisQuestionnaireForm, CreateQuestionsForm, NewAnswerForm, NewAnalysisForm, NewAnalysisForm2, UpdateFrameworkForm, UpdateAssessmentForm, CreateReportForm, UpdateFrameworkControlsForm, Add2FWFrameworkControlsForm, AssessmentDetailForm, AssessmentStatusForm, AssessmentDeleteForm, QuestionEditForm, AddMulti2FWFrameworkControlsForm, AnswerUpdateForm, DocumentForm, AnswerDocumentUpdateForm, BSModAnswerDocumentUpdateForm, ReportUpdateForm, ReportGenForm
+from .forms import NewAssessmentForm, NewFrameworkForm, NewFrameworkSourceForm, VendorContactQuestionnaireForm, AnalysisQuestionnaireForm, CreateQuestionsForm, NewAnswerForm, NewAnalysisForm, NewAnalysisForm2, UpdateFrameworkForm, UpdateAssessmentForm, CreateReportForm, UpdateFrameworkControlsForm, Add2FWFrameworkControlsForm, AssessmentDetailForm, AssessmentStatusForm, AssessmentDeleteForm, QuestionEditForm, AddMulti2FWFrameworkControlsForm, AnswerUpdateForm, DocumentForm, AnswerDocumentUpdateForm, BSModAnswerDocumentUpdateForm, ReportUpdateForm, ReportGenForm, QuestionEditUpdateForm
 from . models import Assessment, Framework, FrameworkSource, FrameworkControls, AssessmentFrameworks, Questionnaire, Question, Report, Document
 from companies.models import Company, User
-from .utils import CloneFramework, handle_uploaded_file, PopulateQuestions
+from .utils import handle_uploaded_file, PopulateQuestions
 #from django_weasyprint import WeasyTemplateResponseMixin
 #from django_weasyprint.views import CONTENT_TYPE_PNG
 #from .htmldocxconv import htmldocxconv
@@ -681,6 +691,9 @@ class FrameworkControlsDeleteView(GroupRequiredMixin, DeleteView): #DeleteView):
         context['framework'] = framework
         return context
 
+    def get_success_url(self):
+        uuid = self.kwargs['uuid']
+        return HttpResponseRedirect('/controls/' + str(uuid))
 
 
 class FrameworkCreateView(GroupRequiredMixin, FrameworkFormActionMixin, CreateView):
@@ -933,6 +946,18 @@ class VendorQuestionListView2(GroupRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        def safe_complete_pct(tot_answ, q_count):
+            if tot_answ <= 0:
+                return 0
+            else:
+                compl_pct = int((tot_answ / q_count) * 100)
+            return compl_pct
+        def safe_analysis_complete(anl_count, q_count):
+            if anl_count <= 0:
+                return 0
+            else:
+                anl_count_pct = int(( anl_count / q_count) * 100)
+            return anl_count_pct
         context = super().get_context_data(**kwargs)
         #questions = Question.objects.filter(assessment_id=self.kwargs['uuid']).all()
         questions = Question.objects.filter(assessment=self.kwargs['uuid']).all()
@@ -950,12 +975,14 @@ class VendorQuestionListView2(GroupRequiredMixin, ListView):
 
         question_count = len(questions)
         analysis_count = len(analyzed_questions)
-        print(analysis_count)
-        complete_pct = int((total_answers / question_count) * 100)
-        if analysis_count == 0:
-            analysis_complete_pct = 0
-        else:
-            analysis_complete_pct = int(( analysis_count / question_count) * 100)
+        #print(analysis_count)
+        complete_pct = safe_complete_pct(total_answers, question_count)  #int((total_answers / question_count) * 100)
+        analysis_complete_pct = safe_analysis_complete(analysis_count, question_count)
+
+        #if analysis_count == 0:
+        #    analysis_complete_pct = 0
+        #else:
+        #    analysis_complete_pct = int(( analysis_count / question_count) * 100)
         thisassessment = Assessment.objects.filter(uuid=self.kwargs['uuid']).first()
         context['assessment'] = thisassessment
         context['questions'] = questions
@@ -969,7 +996,7 @@ class VendorQuestionListView2(GroupRequiredMixin, ListView):
         return context
 
 
-class AnalysisQuestionListView(GroupRequiredMixin, FormView):
+class AnalysisQuestionListView(GroupRequiredMixin, ListView):
     group_required = [ u"administrator", u"owner", u"analyst" ]
     #authenticated_redirect_url = u"/"
     #login_url = '/users/login/'
@@ -992,7 +1019,7 @@ class AnalysisQuestionListView(GroupRequiredMixin, FormView):
     paginate_by = 10
 
     def get_queryset(self):
-        print("self kwarg id:" + self.kwargs['uuid'])
+
         queryset = Question.objects.filter(assessment=self.kwargs['uuid']).all()
         return queryset
 
@@ -1118,6 +1145,7 @@ def QuestionUpdateView2(request, uuid):
 
 
 class AnalysisUpdateView(GroupRequiredMixin, UpdateView):
+#class AnalysisUpdateView(GroupRequiredMixin, BSModalFormView):
     group_required = [ u"owner", u"administrator", u"analyst" ]
     login_url = '/'
     template_name = "assessments/analysis_form.html"
@@ -1157,10 +1185,49 @@ class AnalysisUpdateView(GroupRequiredMixin, UpdateView):
         retrieved_question = self.get_object()
         context['question'] = retrieved_question
         qassessmentid = retrieved_question.assessment.uuid
+
         context['quuid'] = qassessmentid
-        #if 'view' not in kwargs:
-        #    kwargs['view'] = self
+        this_assessment = Assessment.objects.filter(uuid=qassessmentid).first()
+
+        context['assessment_name'] = this_assessment.name
         return context  #, kwargs
+
+class AnalysisUpdateEvidenceView(GroupRequiredMixin, UpdateView):
+#class AnalysisUpdateEvidenceView(GroupRequiredMixin, BSModalFormView):
+    group_required = [ u"owner", u"administrator", u"analyst" ]
+    login_url = '/'
+    model = Question
+    template_name = "assessments/question_evidence_form.html"
+    #form_class = NewAnswerForm
+    #model = Question
+    #form_class = NewAnalysisForm2
+    fields = [ 'document' ]
+    slug_url_kwarg = Question.uuid
+
+    def form_valid(self, form):
+        self.success_url = self.request.META.get('HTTP_REFERER') #self.request.POST.get('previous_page')
+        return super().form_valid(form)
+
+    def get_object(self, *args, **kwargs):
+        question = Question.objects.get(uuid=self.kwargs['uuid'])
+        return question
+
+    #def get_success_url(self):
+        #self.success_url = self.request.POST.get('previous_page')
+        #return HttpResponseRedirect(str(self.request.path))   #("/questionnaire/" + self.kwargs['next'] + "/")
+
+    def get_context_data(self, **kwargs):
+        if 'view' not in kwargs:
+            kwargs['view'] = self
+        context = super(AnalysisUpdateEvidenceView, self).get_context_data(**kwargs)
+        #retrieved_question = self.get_object()
+        #context['question'] = retrieved_question
+        #qassessmentid = retrieved_question.assessment.uuid
+        #context['quuid'] = qassessmentid
+        #this_assessment = Assessment.objects.filter(uuid=qassessmentid).first()
+        return context  #, kwargs
+
+
 
 class FrameworkDeleteView2(GroupRequiredMixin, BSModalDeleteView):
     group_required = [ u"owner", u"administrator"]
@@ -1180,13 +1247,15 @@ class FrameworkDeleteView2(GroupRequiredMixin, BSModalDeleteView):
 
     def get_queryset(self):
     #    print("self kwarg id:" + self.kwargs['uuid'])
-        queryset = Framework.objects.filter(uuid=self.kwargs['uuid']) #.order_by('id')
+        queryset = Framework.objects.filter(uuid=self.kwargs['uuid']).first() #.order_by('id')
         return queryset
 
     def get_context_data(self, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
         return kwargs
+
+
 
 class AssessmentDeleteView2(GroupRequiredMixin, DeleteView):
     group_required = [ u"owner", u"administrator"]
@@ -1365,7 +1434,6 @@ def AssessmentStatusChange(request, uuid):
             return
 
         def VENDOR_SUBMIT(self):
-            print("caught here ...")
             new_status = "IN_ANALYSIS"
             thisassessment.status = new_status
             thisassessment.save()
@@ -1421,12 +1489,50 @@ def AssessmentStatusChange(request, uuid):
     print("returning the user to: " + str(url))
     return HttpResponseRedirect(url)
 
+class CloneFramework(View):
 
-def RequestToCloneFramework(request, uuid):
-    #framework_to_clone=Framework.objects.filter(uuid=uuid)
-    #NewFramework = Framework()
-    CloneFramework(uuid)
-    return HttpResponseRedirect(reverse_lazy('framework_list'))
+
+    def get(self, request, uuid):
+        #uuid_to_clone = self.request.kwargs['uuid']
+
+        def CloneAFramework(uuid):
+            #print("cloning ... ")
+            framework_to_clone = Framework.objects.filter(uuid=uuid).first()
+            print("cloning: " + str(framework_to_clone.name) + " with UUID: " + str(uuid))
+            NewFramework = Framework()
+            NewFramework.name = framework_to_clone.name + " - clone"
+            NewFramework.short_name = framework_to_clone.short_name
+            NewFramework.version = framework_to_clone.version
+            NewFramework.publication_date = framework_to_clone.publication_date
+            NewFramework.source = framework_to_clone.source
+            NewFramework.save()
+            LatestFramework = Framework.objects.latest('order_id')
+            LFUUID = LatestFramework.uuid
+            print("UUID to assign to cloned controls ... [for new framework]: " + str(LFUUID))
+
+            CloneFrameworkControls = FrameworkControls.objects.filter(frameworkUUID=uuid)
+            print(str(len(CloneFrameworkControls)))
+
+            for control in CloneFrameworkControls:
+                print("cloning " + control.subcategoryID)
+                NewControl = FrameworkControls()
+                NewControl.framework = LatestFramework #ontrol.framework
+                NewControl.frameworkUUID = LFUUID
+                NewControl.function = control.function
+                NewControl.functionID = control.functionID
+                NewControl.category = control.category
+                NewControl.categoryID = control.categoryID
+                NewControl.category_statement = control.category_statement
+                NewControl.subcategory = control.subcategory
+                NewControl.subcategoryID = control.subcategoryID
+                #NewControl.control_statement = control.control_statement
+                NewControl.default_question = control.default_question
+                NewControl.reference = control.reference
+                NewControl.save()
+
+
+        CloneAFramework(uuid)
+        return HttpResponseRedirect(reverse_lazy('framework_list'))
 
 
 def VendorQuestionListApproved(request, uuid):
@@ -1445,7 +1551,7 @@ class AnalysisListView2(GroupRequiredMixin, ListView):
     model = Assessment
     template_name = "assessments/analysis_list.html"
     #queryset = Questionnaire.objects.all()
-
+    paginate_by = 10
     #queryset = Assessment.objects.filter(analyst=analyst)
     #fields = ['uuid', 'Name', 'Vendor', 'Owner', 'StartDate', 'CompleteDate', 'Status', 'Framework']
     fields = ['uuid', 'Name' ]
@@ -1531,7 +1637,7 @@ class ReportListView(GroupRequiredMixin, ListView):
 
     def get_object(self, queryset=None):
         #obj = User.objects.filter(uuid=self.kwargs['uuid']).first()
-        myReports = Report.objects.get(pk=self.kwargs['uuid'],analyst=self.kwargs['analyst'])
+        #myReports = Report.objects.get(pk=self.kwargs['uuid'],analyst=self.kwargs['analyst'])
         #Q(vendor_contact=self.request.user) | Q(analyst=self.request.user) | Q(owner=self.request.user)
         myReports = Report.objects.filter(Q(analyst=self.request.user) | Q(owner=self.request.user))
         #print(myUser.first_name + " " + myUser.last_name)
@@ -1566,7 +1672,7 @@ def GenerateReport(request, uuid):
         if not report_check:
             NewReport = Report()
             NewReport.name = assessment.name + " Report"
-            NewReport.publication_date = datetime.datetime.date.today()
+            NewReport.publication_date = datetime.today()
             NewReport.questionnaire = questionnaire
             NewReport.assessment = assessment
             NewReport.executive_summary = ""
@@ -2012,6 +2118,10 @@ def ReportDetailDOCXView2(request, uuid):
 
 
 def ReportDetailDOCXView3(request, uuid):
+
+    def report_based_upload_to(uuid, filename):
+        return "uploads/{}/{}".format(uuid, filename)
+
     def change_orientation():
         current_section = doc.sections[-1]
         new_width, new_height = current_section.page_height, current_section.page_width
@@ -2031,6 +2141,29 @@ def ReportDetailDOCXView3(request, uuid):
         tblHeader.set(qn('w:val'), "true")
         trPr.append(tblHeader)
         return row
+
+    def create_presigned_url(bucket_name, object_name, expiration=3600):
+        """Generate a presigned URL to share an S3 object
+
+        :param bucket_name: string
+        :param object_name: string
+        :param expiration: Time in seconds for the presigned URL to remain valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+
+        # Generate a presigned URL for the S3 object
+        s3_client = boto3.client('s3')
+        try:
+            response = s3_client.generate_presigned_url('get_object',
+                                                        Params={'Bucket': bucket_name,
+                                                                'Key': object_name},
+                                                        ExpiresIn=expiration)
+        except ClientError as e:
+            logging.error(e)
+            return None
+
+        # The response contains the presigned URL
+        return response
 
     report = Report.objects.filter(uuid=uuid).first()
     questions = Question.objects.filter(assessment=report.assessment.uuid)
@@ -2215,12 +2348,53 @@ def ReportDetailDOCXView3(request, uuid):
 
 
     # Now save the document to a location
-    filename = '/tmp/report.docx'
-    doc.save(filename)
-    #visible_filename = 'report.{}'.format(doctype)
-    visible_filename = 'report.docx'
+    filename = report.assessment.name + " Report.docx"
 
-    return FileResponse(filename, visible_filename)
+
+
+    temp_filename = '/app/tmp/' + filename
+    doc.save(temp_filename)
+
+
+    AWS_S3_UPLOAD_PATH = report_based_upload_to(report.uuid, filename)
+    #file_URL = AWS_S3_BUCKET_URL + AWS_S3_UPLOAD_PATH
+    import boto3
+    s3 = boto3.client('s3')
+    s3.upload_file(temp_filename, settings.AWS_STORAGE_BUCKET_NAME, AWS_S3_UPLOAD_PATH)
+
+    #bucket = s3.Bucket(settings.AWS_S3_BUCKET_NAME)
+    #bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+
+
+    #source_stream = StringIO(doc)
+    #bucket_path = report_based_upload_to(report.uuid, filename)
+    print("AWS S3 Upload Path: " + AWS_S3_UPLOAD_PATH)
+    #s3.upload_file(temp_filename, settings.AWS_STORAGE_BUCKET_NAME, AWS_S3_UPLOAD_PATH)
+    #body=obj.get()['Body'].read()
+    #buffer = BytesIO()
+    #buffer.write(doc)
+    #print(buffer)
+    #text = docx2txt.process(buffer)
+
+    #bucket.put_object(Key=bucket_path, Body=buffer)
+    #bucket.put_object(Key=AWS_S3_UPLOAD_PATH, Body=buffer)
+
+
+    #doc.save(file_URL)
+    #visible_filename = 'report.{}'.format(doctype)
+    visible_filename = filename
+    #report_file = open()
+    #url = create_presigned_url(settings.AWS_STORAGE_BUCKET_NAME, filename)
+    url = create_presigned_url(settings.AWS_STORAGE_BUCKET_NAME, AWS_S3_UPLOAD_PATH)
+    print(url)
+    if url is not None:
+        response = requests.get(url)
+    return HttpResponseRedirect(url)
+    #return FileResponse(url, visible_filename)
+    #return FileResponse(response)
+    #return HttpResponse(response)
+    #return StreamingHttpResponse(response)
+
 #else:
 #    return HttpResponseRedirect('/reports/')
 
@@ -2317,6 +2491,40 @@ def answer_update(request, uuid):
     #question.save()
     #response_data = {'success':1}
     #return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+@login_required
+def question_edit_update(request, uuid):
+    #if not request.user.has_perm('backend.add_artist'):
+    #if not check_membership(request, r"vendor"): #request.user.has_role('vendor'):
+    #    raise PermissionDenied
+
+    # Either render only the modal content, or a full standalone page
+    #if request.is_ajax():
+    #    template_name = 'frontend/includes/generic_form_inner.html'
+    #else:
+    #    template_name = 'frontend/includes/generic_form.html'
+
+    object = None
+    if request.method == 'POST':
+        form = QuestionEditUpdateForm(data=request.POST)
+        if form.is_valid():
+
+            question = Question.objects.filter(uuid=uuid).first()
+            question.question = form.cleaned_data['question']
+            question.save()
+            #question.answer = request.answer  #self.kwargs['uuid']).first()
+            #object = form.save()
+            if not request.is_ajax():
+                # reload the page
+                #next = request.META['PATH_INFO']
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                #return HttpResponseRedirect(next)
+            # if is_ajax(), we just return the validated form, so the modal will close
+    else:
+        form = QuestionEditUpdateForm()
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @csrf_exempt
