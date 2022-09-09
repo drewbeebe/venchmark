@@ -5,10 +5,10 @@ from . models import Framework, FrameworkSource, FrameworkControls, Assessment, 
 from django.conf import settings
 from django.conf.urls.static import static
 
-def CloneFramework(uuid):
-    print("cloning ... ")
+def CloneFramework(self, uuid):
+    #print("cloning ... ")
     framework_to_clone = Framework.objects.filter(uuid=uuid).first()
-    print(framework_to_clone.name)
+    #print(framework_to_clone.name)
     NewFramework = Framework()
     NewFramework.name = framework_to_clone.name + " - clone"
     NewFramework.short_name = framework_to_clone.short_name
@@ -18,14 +18,14 @@ def CloneFramework(uuid):
     NewFramework.save()
     LatestFramework = Framework.objects.latest('order_id')
     LFUUID = LatestFramework.uuid
-    print("UUID to assign to cloned controls ... [for new framework]: " + str(LFUUID))
+    #print("UUID to assign to cloned controls ... [for new framework]: " + str(LFUUID))
 
-    CloneFrameworkControls = FrameworkControls.objects.filter(framework.uuid==uuid)
+    CloneFrameworkControls = FrameworkControls.objects.filter(frameworkUUID=framework_to_clone.uuid)
 
     for control in CloneFrameworkControls:
-        print("cloning " + control.subcategoryID)
+        #print("cloning " + control.subcategoryID)
         NewControl = FrameworkControls()
-        NewControl.framework = control.framework
+        NewControl.framework = LatestFramework #ontrol.framework
         NewControl.frameworkUUID = LFUUID
         NewControl.function = control.function
         NewControl.functionID = control.functionID
