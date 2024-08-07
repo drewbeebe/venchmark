@@ -88,7 +88,8 @@ urlpatterns = [
     path('framework/update/<uuid:uuid>/', AssessmentViews.FrameworkUpdateView2.as_view(), name='framework_update'),
     path('framework/<uuid:uuid>/', AssessmentViews.FrameworkDetailView.as_view(), name='framework_detail'),
     path('framework/<uuid:uuid>/delete/', AssessmentViews.FrameworkDeleteView2.as_view(), name='framework_delete'),
-    path('framework/clone/<uuid:uuid>/',  AssessmentViews.RequestToCloneFramework, name='framework_clone'),
+    path('framework/clone/<uuid:uuid>/',  AssessmentViews.CloneFramework.as_view(), name='framework_clone'),
+    # path('framework/clone/<uuid:uuid>/',  AssessmentViews.RequestToCloneFramework, name='framework_clone'),
 
     # framework controls URLS
     path('controls/<uuid:uuid>/',  AssessmentViews.FrameworkControlsListView.as_view(), name='controls_list'),

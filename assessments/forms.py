@@ -1151,6 +1151,14 @@ class AnswerUpdateForm(forms.ModelForm):
         fields = [
             'answer',
         ]
+        
+class QuestionEditUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Question
+        fields = [
+            'question',
+        ]
 
 class ReportUpdateForm(forms.ModelForm):
 

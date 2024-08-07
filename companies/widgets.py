@@ -18,12 +18,22 @@ class BootstrapDateTimePickerInput(DateTimeInput):
 
 class BootstrapSelect(Select):
     class Media:
-        css = {
-          'all': ['//cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css',  # noqa
-                  static('bootstrap_select/bootstrap_select.css'), ]
-        }
+        # css = {
+        #   'all': ['//cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css',  # noqa
+        #           static('bootstrap-select/1.13.18/css/bootstrap_select.css'), ]
+        # }
+
+        # css = {
+        #   'all': ['//cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css',  # noqa
+        #           static('bootstrap-select/1.13.18/css/bootstrap_select.css'), ]
+        # }
         js = ['//cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js', ]  # noqa
 
+        css = {
+          'all': [
+                  static('bootstrap-select/1.13.18/css/bootstrap-select.css'), ]
+        }
+        js = [ static('bootstrap-select/1.13.18/js/bootstrap-select.js'), ]  # noqa
     #return forms.Media(
     #        css=css,
     #        js=js,

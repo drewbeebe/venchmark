@@ -15,9 +15,9 @@ import docx
 
 ##imports for secretfileview
 import logging
-import boto3
-from botocore.exceptions import ClientError
-import requests
+# import boto3
+# from botocore.exceptions import ClientError
+# import requests
 
 #imports for django
 #import datetime as date
@@ -48,7 +48,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import inlineformset_factory
 #from django.core.servers.basehttp import FileWrapper
 from wsgiref.util import FileWrapper
-from venchmark.settings import BASE_DIR, AWS_S3_BUCKET_URL
+from venchmark.settings import BASE_DIR   #, AWS_S3_BUCKET_URL
 from django.contrib.staticfiles import finders
 from django.core.files.base import ContentFile
 from docx.shared import Inches

@@ -9,18 +9,37 @@
 
       <!-- Optional JavaScript -->
       <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-      <script  src="https://code.jquery.com/jquery-3.4.1.min.js"  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="  crossorigin="anonymous"></script>
+      <!-- <script  src="https://code.jquery.com/jquery-3.4.1.min.js"  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="  crossorigin="anonymous"></script> -->
       <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- Chart.js -->
+      <script src="{% static 'popper.js/popper.min.js' %}"></script>
+      <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
+      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script> -->
+      <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> -->
+      <script src="{% static 'bs/js/bootstrap.min.js' %}"></script>
+      <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+      <link href="{% static 'bs/css/bootstrap.min.css' %}" rel='stylesheet'>
+    <!-- Chart.js
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script> -->
     <!-- <script src='https://www.chartjs.org/dist/2.7.3/Chart.bundle.js'></script> -->
+    <!-- <script src='https://www.chartjs.org/samples/latest/utils.js'></script> -->
+
+
+    <!-- local chart.js -->
+    <script src="{% static 'Chart.js/2.9.3/utils.js' %}"></script>
+    <script src="{% static 'Chart.js/2.9.3/Chart.bundle.js' %}"></script>
+    <script src="{% static 'Chart.js/2.9.3/Chart.bundle.min.js' %}"></script>
+    <script src="{% static 'Chart.js/2.9.3/Chart.js' %}"></script>
+    <script src="{% static 'Chart.js/2.9.3/Chart.min.js' %}"></script>
+
+    <!-- <script src='https://www.chartjs.org/samples/latest/utils.js'></script>
     <script src='https://www.chartjs.org/samples/latest/utils.js'></script>
+    <script src='https://www.chartjs.org/samples/latest/utils.js'></script>
+    <script src='https://www.chartjs.org/samples/latest/utils.js'></script>
+    <script src='https://www.chartjs.org/samples/latest/utils.js'></script> -->
+
     <link href="{% static 'bs/css/style.css' %}" rel='stylesheet'>
 
     <!-- Google Fonts -->
@@ -37,6 +56,8 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> -->
 
         <script src="https://kit.fontawesome.com/f1f47edfe0.js" crossorigin="anonymous"></script>
+        
+        <link href="{% static 'fonts-6/css/all.css' %}"
     <title>{% block title %}Venchmark - Vendor Compliance{% endblock title %}</title>
 
 
