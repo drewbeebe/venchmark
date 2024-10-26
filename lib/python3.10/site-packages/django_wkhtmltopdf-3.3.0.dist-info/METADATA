@@ -1,0 +1,95 @@
+Metadata-Version: 2.0
+Name: django-wkhtmltopdf
+Version: 3.3.0
+Summary: Converts HTML to PDF using wkhtmltopdf.
+Home-page: https://github.com/incuna/django-wkhtmltopdf
+Author: Incuna Ltd
+Author-email: admin@incuna.com
+License: BSD-2-Clause
+Keywords: django wkhtmltopdf pdf
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Framework :: Django
+Requires-Dist: six
+
+django-wkhtmltopdf
+==================
+
+.. image:: https://badge.fury.io/py/django-wkhtmltopdf.png
+    :target: http://badge.fury.io/py/django-wkhtmltopdf
+    :alt: Latest version
+
+.. image:: https://travis-ci.org/incuna/django-wkhtmltopdf.png?branch=master
+   :target: https://travis-ci.org/incuna/django-wkhtmltopdf
+   :alt: Travis-CI
+
+.. image:: https://img.shields.io/pypi/dm/django-wkhtmltopdf.svg
+    :target: https://badge.fury.io/py/django-wkhtmltopdf
+    :alt: Number of PyPI downloads on a month
+
+
+Converts HTML to PDF
+--------------------
+
+Provides Django views to wrap the HTML to PDF conversion of the `wkhtmltopdf <http://wkhtmltopdf.org>`_ binary.
+
+Requirements
+------------
+
+Install the `wkhtmltopdf static binary <http://wkhtmltopdf.org/downloads.html>`_.
+
+This requires libfontconfig (on Ubuntu: ``sudo aptitude install libfontconfig``).
+
+Python 2.6+ and 3.3+ are supported.
+
+
+Installation
+------------
+
+Run ``pip install django-wkhtmltopdf``.
+
+Add ``'wkhtmltopdf'`` to ``INSTALLED_APPS`` in your ``settings.py``.
+
+By default it will execute the first ``wkhtmltopdf`` command found on your ``PATH``.
+
+If you can't add wkhtmltopdf to your ``PATH``, you can set ``WKHTMLTOPDF_CMD`` to a
+specific executable:
+
+e.g. in ``settings.py``: ::
+
+    WKHTMLTOPDF_CMD = '/path/to/my/wkhtmltopdf'
+
+or alternatively as env variable: ::
+
+    export WKHTMLTOPDF_CMD=/path/to/my/wkhtmltopdf
+
+You may also set ``WKHTMLTOPDF_CMD_OPTIONS`` in ``settings.py`` to a dictionary
+of default command-line options.
+
+The default is: ::
+
+    WKHTMLTOPDF_CMD_OPTIONS = {
+        'quiet': True,
+    }
+
+Documentation
+-------------
+
+Documentation is available at http://django-wkhtmltopdf.readthedocs.org/en/latest/.
+
+License
+-------
+
+MIT licensed. See the bundled `LICENSE <https://github.com/incuna/django-wkhtmltopdf/blob/master/LICENSE>`_ file for more details.
+
+

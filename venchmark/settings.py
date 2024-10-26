@@ -15,6 +15,13 @@ from decouple import config
 ###VMARK###import sys
 ###VMARK###import subprocess
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import django
+from django.utils.encoding import smart_str, force_str
+django.utils.encoding.smart_text = smart_str
+django.utils.encoding.force_text = force_str
+from django.utils.translation import gettext_lazy
+django.utils.translation.ugettext_lazy = gettext_lazy
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -62,7 +69,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth', # new!
+    'dj_rest_auth',
+    # 'rest_auth', # new!
     'corsheaders',
     'widget_tweaks',
     'bootstrap_modal_forms',

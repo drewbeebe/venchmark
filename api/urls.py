@@ -29,5 +29,6 @@ urlpatterns = [
     path('reports/', views.ReportsListAPIVIew.as_view()),
 
     #path('search/', views.SearchAPIView.as_view()),
-    path('rest-auth/', include('rest_auth.urls')),
+    # path('rest-auth/', include('rest_auth.urls')),
+    path('rest-auth/', include('dj_rest_auth.urls')),  # was dj-rest-auth/
 ]
