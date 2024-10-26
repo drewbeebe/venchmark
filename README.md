@@ -28,6 +28,15 @@ This will walk you through creating a super user account. You can then use that 
 
 Step 6. python3 ./manage.py runserver
 
+### Alternative Installation
+
+You can install and try Venchmark by running the Docker container. This may be much easier for most people to try it out.
+
+Step 1. docker pull jdbeebe/venchmark
+
+Step 2. docker run -d -p 8000:8000 venchmark
+
+Step 3. you can then login to the application using default credentials of username 'admin@admin.com' and password 'admin'
 
 -----
 ### User's Manual
